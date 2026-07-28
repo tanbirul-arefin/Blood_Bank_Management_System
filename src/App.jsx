@@ -117,12 +117,39 @@ const requestData = [
 ];
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('Dhaka');
   const [selectedGroup, setSelectedGroup] = useState('A+');
   const [districtSearch, setDistrictSearch] = useState('');
   const [savedContacts, setSavedContacts] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
   const [chatMessage, setChatMessage] = useState('Hi, I need urgent support. Can you help?');
+
+  const handleLogin = (event) => {
+    event.preventDefault();
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
+
+    if (trimmedUsername === 'admin' && trimmedPassword === '1234') {
+      setIsLoggedIn(true);
+      setLoginError('');
+      setUsername('');
+      setPassword('');
+      return;
+    }
+
+    setLoginError('Invalid username or password. Try admin / 1234.');
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setLoginError('');
+    setActiveChat(null);
+    setSavedContacts([]);
+  };
 
   const inventoryForDistrict = districtInventory[selectedDistrict];
   const districtDonors = donorProfiles.filter((donor) => donor.district === selectedDistrict);
@@ -152,6 +179,45 @@ function App() {
       ? activeChat
       : null;
 
+  if (!isLoggedIn) {
+    return (
+      <div className="page-shell login-shell">
+        <div className="login-card">
+          <div className="login-heading">
+            <p className="hero-kicker">Blood Management Login</p>
+            <h1>Login first to continue</h1>
+            <p>Enter your credentials to access donor availability and district requests.</p>
+          </div>
+          <form className="login-form" onSubmit={handleLogin}>
+            <label className="login-label" htmlFor="username">Username</label>
+            <input
+              id="username"
+              type="text"
+              className="login-field"
+              value={username}
+              onChange={(event) => setUsername(event.target.value)}
+              placeholder="admin"
+              autoComplete="username"
+            />
+            <label className="login-label" htmlFor="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              className="login-field"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="1234"
+              autoComplete="current-password"
+            />
+            {loginError && <p className="login-error">{loginError}</p>}
+            <button type="submit" className="primary-btn login-submit">Login</button>
+          </form>
+          <p className="login-help">Use <strong>admin</strong> / <strong>1234</strong> to enter the app.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="page-shell">
       <main className="dashboard">
@@ -176,6 +242,9 @@ function App() {
               </button>
               <button type="button" className="ghost-btn hero-secondary">
                 See urgent requests
+              </button>
+              <button type="button" className="ghost-btn" onClick={handleLogout}>
+                Logout
               </button>
             </div>
             <div className="hero-pill-row">
