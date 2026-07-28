@@ -71,7 +71,7 @@ const districtOptions = [
 const districtInventory = Object.fromEntries(
   districtOptions.map((district, index) => {
     if (district === 'Dhaka') {
-      return [district, { 'A+': 24, 'A-': 10, 'B+': 18, 'B-': 7, 'AB+': 12, 'AB-': 6, 'O+': 24, 'O-': 9 }];
+      return [district, { 'A+': 50, 'A-': 15, 'B+': 35, 'B-': 12, 'AB+': 20, 'AB-': 8, 'O+': 55, 'O-': 15 }];
     }
 
     const base = [20, 8, 24, 7, 12, 5, 28, 6];
@@ -222,32 +222,42 @@ function App() {
               <p className="eyebrow">Step 2</p>
               <h2>Available Blood Units in {selectedDistrict}</h2>
             </div>
-            <p>All blood groups for this district are shown below, and each one can be opened to view donors.</p>
+            <p>All blood groups for this district are shown below, and each one can be opened to view the matching donors.</p>
           </div>
 
           <div className="inventory-list">
-            {bloodGroups.map((group) => {
-              const units = inventoryForDistrict[group];
-              const donors = districtDonors.filter((donor) => donor.blood === group).length;
+            {bloodGroups.reduce((rows, group, index) => {
+              if (index % 2 === 0) {
+                rows.push([]);
+              }
+              rows[rows.length - 1].push(group);
+              return rows;
+            }, []).map((rowGroups, rowIndex) => (
+              <div className="inventory-row-group" key={rowIndex}>
+                {rowGroups.map((group) => {
+                  const units = inventoryForDistrict[group];
+                  const donors = districtDonors.filter((donor) => donor.blood === group).length;
 
-              return (
-                <button
-                  type="button"
-                  key={group}
-                  className={`inventory-row ${selectedGroup === group ? 'active' : ''}`}
-                  onClick={() => setSelectedGroup(group)}
-                >
-                  <div>
-                    <strong>{group}</strong>
-                    <span>{units} units available</span>
-                  </div>
-                  <div>
-                    <strong>{donors}</strong>
-                    <span>donors</span>
-                  </div>
-                </button>
-              );
-            })}
+                  return (
+                    <button
+                      type="button"
+                      key={group}
+                      className={`inventory-row ${selectedGroup === group ? 'active' : ''}`}
+                      onClick={() => setSelectedGroup(group)}
+                    >
+                      <div>
+                        <strong>{group}</strong>
+                        <span>{units} units available</span>
+                      </div>
+                      <div>
+                        <strong>{donors}</strong>
+                        <span>donors</span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
           </div>
         </section>
 
@@ -283,7 +293,7 @@ function App() {
             <div className="section-heading">
               <div>
                 <p className="eyebrow">Step 3</p>
-                <h2>Donors for {selectedGroup}</h2>
+                <h2>{selectedGroup} Donors in {selectedDistrict}</h2>
               </div>
               <p>Each donor below includes their name, number, address, and availability time.</p>
             </div>

@@ -123,6 +123,12 @@ textarea {
   gap: 10px;
 }
 
+.inventory-row-group {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
 .inventory-row {
   display: flex;
   justify-content: space-between;
@@ -387,9 +393,9 @@ textarea {
 
 @media (max-width: 980px) {
   .district-grid,
-  .blood-group-grid,
   .stats-grid,
-  .content-grid {
+  .content-grid,
+  .inventory-row-group {
     grid-template-columns: 1fr;
   }
 
