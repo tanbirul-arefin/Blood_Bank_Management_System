@@ -119,7 +119,8 @@ const requestData = [
 function App() {
   const [selectedDistrict, setSelectedDistrict] = useState('Dhaka');
   const [selectedGroup, setSelectedGroup] = useState('A+');
-  const [pinnedDonors, setPinnedDonors] = useState([17]);
+  const [districtSearch, setDistrictSearch] = useState('');
+  const [savedContacts, setSavedContacts] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
   const [chatMessage, setChatMessage] = useState('Hi, I need urgent support. Can you help?');
 
@@ -130,42 +131,78 @@ function App() {
   );
   const districtRequests = requestData.filter((request) => request.district === selectedDistrict).slice(0, 3);
   const totalUnits = Object.values(inventoryForDistrict).reduce((sum, value) => sum + value, 0);
+  const selectedGroupUnits = inventoryForDistrict[selectedGroup];
+  const filteredDistricts = districtOptions.filter((district) =>
+    district.toLowerCase().includes(districtSearch.toLowerCase())
+  );
+  const lowSupplyGroups = bloodGroups.filter((group) => {
+    const donors = districtDonors.filter((donor) => donor.blood === group).length;
+    return inventoryForDistrict[group] <= 10 && donors <= 2;
+  });
 
-  const togglePin = (donorId) => {
-    setPinnedDonors((current) =>
+  const toggleSaveContact = (donorId) => {
+    setSavedContacts((current) =>
       current.includes(donorId) ? current.filter((item) => item !== donorId) : [...current, donorId]
     );
   };
 
-  const pinnedList = donorProfiles.filter((donor) => pinnedDonors.includes(donor.id));
+  const savedContactList = donorProfiles.filter((donor) => savedContacts.includes(donor.id));
   const activeDonorInfo =
-    (activeChat && activeChat.district === selectedDistrict && activeChat.blood === selectedGroup)
+    activeChat && activeChat.district === selectedDistrict && activeChat.blood === selectedGroup
       ? activeChat
-      : groupDonors[0] || null;
+      : null;
 
   return (
     <div className="page-shell">
       <main className="dashboard">
         <header className="hero-panel">
-          <div>
-            <p className="eyebrow">Blood Donation Network</p>
-            <h1>Select a district and find blood donors in a few clicks.</h1>
+          <div className="hero-copy">
+            <p className="hero-kicker">Blood Donation Network</p>
+            <h1>Find nearby blood donors faster with a district-first discovery flow.</h1>
             <p>
-              Choose a district, see available units, review matching donors, and contact them quickly.
+              Choose your district, compare available blood units, and connect with willing donors in a clean, local workflow.
             </p>
+            <div className="hero-action-row">
+              <button
+                type="button"
+                className="primary-btn hero-cta"
+                onClick={() => {
+                  setSelectedDistrict('Dhaka');
+                  setSelectedGroup('A+');
+                  setActiveChat(null);
+                }}
+              >
+                Start with Dhaka
+              </button>
+              <button type="button" className="ghost-btn hero-secondary">
+                See urgent requests
+              </button>
+            </div>
+            <div className="hero-pill-row">
+              <span>Fast local support</span>
+              <span>Verified donor details</span>
+              <span>Real-time availability</span>
+            </div>
           </div>
-          <div className="hero-summary">
-            <div>
-              <strong>{districtOptions.length}</strong>
-              <span>Districts</span>
+          <div className="hero-summary hero-highlight-card">
+            <div className="hero-summary-main">
+              <span className="summary-tag">Today’s readiness</span>
+              <h2>Keep every district ready for emergencies.</h2>
+              <p>Monitor active units, discover nearby donors, and respond immediately to urgent requests.</p>
             </div>
-            <div>
-              <strong>{donorProfiles.length}</strong>
-              <span>Donor Profiles</span>
-            </div>
-            <div>
-              <strong>24/7</strong>
-              <span>Emergency Support</span>
+            <div className="hero-summary-grid">
+              <div className="hero-summary-item">
+                <strong>{districtOptions.length}</strong>
+                <span>Districts</span>
+              </div>
+              <div className="hero-summary-item">
+                <strong>{donorProfiles.length}</strong>
+                <span>Donor Profiles</span>
+              </div>
+              <div className="hero-summary-item hero-summary-large">
+                <strong>24/7</strong>
+                <span>Emergency Support</span>
+              </div>
             </div>
           </div>
         </header>
@@ -179,22 +216,49 @@ function App() {
             <p>Click any district to view its blood units and donor availability.</p>
           </div>
 
+          <div className="search-row">
+            <input
+              type="text"
+              placeholder="Search districts..."
+              value={districtSearch}
+              onChange={(event) => setDistrictSearch(event.target.value)}
+              className="search-control"
+            />
+            <span className="search-note">🔎 Filter districts by name</span>
+          </div>
+
           <div className="district-grid">
-            {districtOptions.map((district) => (
-              <button
-                type="button"
-                key={district}
-                className={`district-card ${selectedDistrict === district ? 'active' : ''}`}
-                onClick={() => {
-                  setSelectedDistrict(district);
-                  setSelectedGroup('A+');
-                  setActiveChat(null);
-                }}
-              >
-                <strong>{district}</strong>
-                <span>{districtInventory[district]['A+']} A+ units</span>
-              </button>
-            ))}
+            {filteredDistricts.length > 0 ? (
+              filteredDistricts.map((district) => (
+                <button
+                  type="button"
+                  key={district}
+                  className={`district-card ${selectedDistrict === district ? 'active' : ''}`}
+                  onClick={() => {
+                    setSelectedDistrict(district);
+                    setSelectedGroup('A+');
+                    setActiveChat(null);
+                  }}
+                >
+                  <strong>{district}</strong>
+                  <span>{districtInventory[district]['A+']} A+ units</span>
+                </button>
+              ))
+            ) : (
+              <p className="empty-state">No districts match your search. Try another name.</p>
+            )}
+          </div>
+
+          <div className="district-insights">
+            <span className="insight-pill">
+              Top group <strong>{selectedGroup}</strong>
+            </span>
+            <span className="insight-pill">
+              {selectedGroupUnits} units available
+            </span>
+            <span className="insight-pill">
+              Low supply: <strong>{lowSupplyGroups.length ? lowSupplyGroups.join(', ') : 'none'}</strong>
+            </span>
           </div>
         </section>
 
@@ -298,26 +362,31 @@ function App() {
               <p>Each donor below includes their name, number, address, and availability time.</p>
             </div>
 
-            {pinnedList.length > 0 ? (
-              <div className="pinned-box">
-                <h3>Pinned Donors</h3>
+            <div className="pinned-box">
+              <div className="saved-title-row">
+                <h3>Saved SMS Contacts</h3>
+                <span>{savedContactList.length} saved</span>
+              </div>
+              {savedContactList.length > 0 ? (
                 <div className="pinned-list">
-                  {pinnedList.map((donor) => (
+                  {savedContactList.map((donor) => (
                     <div key={donor.id} className="pinned-item">
                       <span>{donor.name}</span>
-                      <button type="button" onClick={() => setActiveChat(donor)}>
+                      <button type="button" className="chat-mini-btn" onClick={() => setActiveChat(donor)}>
                         Chat
                       </button>
                     </div>
                   ))}
                 </div>
-              </div>
-            ) : null}
+              ) : (
+                <p className="empty-state">No donors saved yet. Tap “Save for SMS” on any donor card.</p>
+              )}
+            </div>
 
             <div className="donor-list">
               {groupDonors.length > 0 ? (
                 groupDonors.map((donor) => {
-                  const isPinned = pinnedDonors.includes(donor.id);
+                  const isSaved = savedContacts.includes(donor.id);
 
                   return (
                     <article className="donor-card" key={donor.id}>
@@ -333,8 +402,8 @@ function App() {
                         <p><strong>Phone:</strong> {donor.mobile}</p>
                         <p><strong>Available Time:</strong> {donor.availableTime}</p>
                         <div className="action-row">
-                          <button type="button" className="ghost-btn" onClick={() => togglePin(donor.id)}>
-                            {isPinned ? 'Unpin' : 'Pin'}
+                          <button type="button" className={`save-btn ${isSaved ? 'saved' : ''}`} onClick={() => toggleSaveContact(donor.id)}>
+                            {isSaved ? 'Saved for SMS' : 'Save for SMS'}
                           </button>
                           <button type="button" className="primary-btn" onClick={() => setActiveChat(donor)}>
                             Chat
@@ -360,12 +429,19 @@ function App() {
 
             {activeDonorInfo ? (
               <div className="chat-box">
-                <img src={activeDonorInfo.image} alt={activeDonorInfo.name} className="chat-avatar" />
-                <h3>{activeDonorInfo.name}</h3>
-                <p><strong>Blood Group:</strong> {activeDonorInfo.blood}</p>
-                <p><strong>Phone:</strong> {activeDonorInfo.mobile}</p>
-                <p><strong>Address:</strong> {activeDonorInfo.address}</p>
-                <p><strong>Available Time:</strong> {activeDonorInfo.availableTime}</p>
+                <div className="chat-head">
+                  <img src={activeDonorInfo.image} alt={activeDonorInfo.name} className="chat-avatar" />
+                  <div>
+                    <h3>{activeDonorInfo.name}</h3>
+                    <p className="chat-role">Ready to respond</p>
+                  </div>
+                </div>
+                <div className="chat-bubble">
+                  <p><strong>Blood Group:</strong> {activeDonorInfo.blood}</p>
+                  <p><strong>Phone:</strong> {activeDonorInfo.mobile}</p>
+                  <p><strong>Address:</strong> {activeDonorInfo.address}</p>
+                  <p><strong>Available Time:</strong> {activeDonorInfo.availableTime}</p>
+                </div>
                 <label className="chat-label" htmlFor="messageBox">Message</label>
                 <textarea
                   id="messageBox"
@@ -373,12 +449,14 @@ function App() {
                   value={chatMessage}
                   onChange={(event) => setChatMessage(event.target.value)}
                 />
-                <button type="button" className="primary-btn" onClick={() => setActiveChat(activeDonorInfo)}>
-                  Send Request
-                </button>
-                <button type="button" className="ghost-btn" onClick={() => setActiveChat(null)}>
-                  Close
-                </button>
+                <div className="chat-actions">
+                  <button type="button" className="primary-btn" onClick={() => setActiveChat(activeDonorInfo)}>
+                    Send Request
+                  </button>
+                  <button type="button" className="ghost-btn" onClick={() => setActiveChat(null)}>
+                    Close
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="chat-box">
@@ -392,7 +470,7 @@ function App() {
                 <li>Choose a district</li>
                 <li>Select a blood group</li>
                 <li>Review donor details</li>
-                <li>Pin and contact quickly</li>
+                <li>Save and contact quickly</li>
               </ul>
             </div>
           </aside>
