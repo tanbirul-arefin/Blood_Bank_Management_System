@@ -24,6 +24,7 @@ const districtOptions = [
   'Pabna',
   'Rajshahi',
   'Sirajganj',
+  'Chapainawabganj',
   'Dinajpur',
   'Gaibandha',
   'Kurigram',
@@ -68,6 +69,17 @@ const districtOptions = [
   'Sherpur',
 ];
 
+const divisions = {
+  Dhaka: ['Dhaka', 'Faridpur', 'Gazipur', 'Gopalganj', 'Kishoreganj', 'Madaripur', 'Manikganj', 'Munshiganj', 'Narayanganj', 'Narsingdi', 'Rajbari', 'Shariatpur', 'Tangail'],
+  Rajshahi: ['Bogura', 'Joypurhat', 'Naogaon', 'Natore', 'Pabna', 'Rajshahi', 'Sirajganj', 'Chapainawabganj'],
+  Rangpur: ['Dinajpur', 'Gaibandha', 'Kurigram', 'Lalmonirhat', 'Nilphamari', 'Panchagarh', 'Rangpur', 'Thakurgaon'],
+  Sylhet: ['Habiganj', 'Moulvibazar', 'Sunamganj', 'Sylhet'],
+  Chattogram: ['Bandarban', 'Brahmanbaria', 'Chandpur', 'Chittagong', "Cox's Bazar", 'Cumilla', 'Feni', 'Khagrachhari', 'Lakshmipur', 'Noakhali', 'Rangamati'],
+  Barisal: ['Barguna', 'Barisal', 'Bhola', 'Jhalokathi', 'Patuakhali', 'Pirojpur'],
+  Khulna: ['Bagerhat', 'Chuadanga', 'Jashore', 'Jhenaidah', 'Khulna', 'Kushtia', 'Magura', 'Meherpur', 'Narail', 'Satkhira'],
+  Mymensingh: ['Jamalpur', 'Mymensingh', 'Netrokona', 'Sherpur'],
+};
+
 const districtInventory = Object.fromEntries(
   districtOptions.map((district, index) => {
     if (district === 'Dhaka') {
@@ -108,6 +120,26 @@ const donorProfiles = [
   { id: 16, name: 'Ayon Sarker', blood: 'O+', district: 'Sylhet', city: 'Shahjalal Upashahar', address: 'Shahjalal Upashahar, Sylhet', mobile: '+8801911117777', status: 'Ready', availableTime: 'Evening', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80' },
 ];
 
+const completeDonorProfiles = [
+  ...donorProfiles,
+  ...districtOptions.flatMap((district, districtIndex) =>
+    bloodGroups
+      .filter((blood) => !donorProfiles.some((donor) => donor.district === district && donor.blood === blood))
+      .map((blood, bloodIndex) => ({
+        id: 1000 + districtIndex * bloodGroups.length + bloodIndex,
+        name: `${district} Blood Support ${blood}`,
+        blood,
+        district,
+        city: 'Sadar',
+        address: `Sadar, ${district}`,
+        mobile: `+8801999${String(districtIndex).padStart(2, '0')}${String(bloodIndex).padStart(2, '02')}`,
+        status: 'Available',
+        availableTime: 'Any time',
+        image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80',
+      }))
+  ),
+];
+
 const requestData = [
   { id: 101, name: 'Rina Akter', district: 'Mymensingh', blood: 'O+', hospital: 'Mymensingh Medical College', contact: '+8801710001001' },
   { id: 102, name: 'Hamidul Islam', district: 'Mymensingh', blood: 'A+', hospital: 'Sadar Hospital', contact: '+8801710001002' },
@@ -121,12 +153,24 @@ function App() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
-  const [selectedDistrict, setSelectedDistrict] = useState('Dhaka');
+  const [selectedDistrict, setSelectedDistrict] = useState(null);
+  const [expandedDivision, setExpandedDivision] = useState('Dhaka');
   const [selectedGroup, setSelectedGroup] = useState('A+');
   const [districtSearch, setDistrictSearch] = useState('');
   const [savedContacts, setSavedContacts] = useState([]);
   const [activeChat, setActiveChat] = useState(null);
   const [chatMessage, setChatMessage] = useState('Hi, I need urgent support. Can you help?');
+  const [registeredDonors, setRegisteredDonors] = useState([]);
+  const [registration, setRegistration] = useState({
+    name: '',
+    blood: 'A+',
+    division: 'Dhaka',
+    district: 'Dhaka',
+    city: '',
+    mobile: '',
+    availableTime: 'Any time',
+  });
+  const [registrationMessage, setRegistrationMessage] = useState('');
 
   const handleLogin = (event) => {
     event.preventDefault();
@@ -151,17 +195,40 @@ function App() {
     setSavedContacts([]);
   };
 
-  const inventoryForDistrict = districtInventory[selectedDistrict];
-  const districtDonors = donorProfiles.filter((donor) => donor.district === selectedDistrict);
-  const groupDonors = donorProfiles.filter(
+  const allDonors = [...completeDonorProfiles, ...registeredDonors];
+
+  const handleRegistration = (event) => {
+    event.preventDefault();
+    const donor = {
+      id: Date.now(),
+      ...registration,
+      address: `${registration.city || 'Sadar'}, ${registration.district}`,
+      status: 'Available',
+      image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80',
+    };
+    setRegisteredDonors((current) => [...current, donor]);
+    setSelectedDistrict(registration.district);
+    setExpandedDivision(registration.division);
+    setSelectedGroup(registration.blood);
+    setRegistrationMessage(`${registration.name} successfully registered in ${registration.district}.`);
+    setRegistration({ ...registration, name: '', city: '', mobile: '' });
+  };
+
+  const inventoryForDistrict = districtInventory[selectedDistrict] || Object.fromEntries(bloodGroups.map((group) => [group, 0]));
+  const districtDonors = selectedDistrict ? allDonors.filter((donor) => donor.district === selectedDistrict) : [];
+  const groupDonors = allDonors.filter(
     (donor) => donor.district === selectedDistrict && donor.blood === selectedGroup
   );
-  const districtRequests = requestData.filter((request) => request.district === selectedDistrict).slice(0, 3);
+  const districtRequests = selectedDistrict ? requestData.filter((request) => request.district === selectedDistrict).slice(0, 3) : [];
   const totalUnits = Object.values(inventoryForDistrict).reduce((sum, value) => sum + value, 0);
   const selectedGroupUnits = inventoryForDistrict[selectedGroup];
   const filteredDistricts = districtOptions.filter((district) =>
     district.toLowerCase().includes(districtSearch.toLowerCase())
   );
+  const visibleDivisions = Object.entries(divisions).map(([division, districts]) => ({
+    division,
+    districts: districts.filter((district) => filteredDistricts.includes(district)),
+  })).filter(({ districts }) => districts.length > 0);
   const lowSupplyGroups = bloodGroups.filter((group) => {
     const donors = districtDonors.filter((donor) => donor.blood === group).length;
     return inventoryForDistrict[group] <= 10 && donors <= 2;
@@ -173,7 +240,7 @@ function App() {
     );
   };
 
-  const savedContactList = donorProfiles.filter((donor) => savedContacts.includes(donor.id));
+  const savedContactList = allDonors.filter((donor) => savedContacts.includes(donor.id));
   const activeDonorInfo =
     activeChat && activeChat.district === selectedDistrict && activeChat.blood === selectedGroup
       ? activeChat
@@ -233,7 +300,8 @@ function App() {
                 type="button"
                 className="primary-btn hero-cta"
                 onClick={() => {
-                  setSelectedDistrict('Dhaka');
+                  setSelectedDistrict(null);
+                  setExpandedDivision('Dhaka');
                   setSelectedGroup('A+');
                   setActiveChat(null);
                 }}
@@ -265,7 +333,7 @@ function App() {
                 <span>Districts</span>
               </div>
               <div className="hero-summary-item">
-                <strong>{donorProfiles.length}</strong>
+                <strong>{allDonors.length}</strong>
                 <span>Donor Profiles</span>
               </div>
               <div className="hero-summary-item hero-summary-large">
@@ -296,29 +364,51 @@ function App() {
             <span className="search-note">🔎 Filter districts by name</span>
           </div>
 
-          <div className="district-grid">
-            {filteredDistricts.length > 0 ? (
-              filteredDistricts.map((district) => (
-                <button
-                  type="button"
-                  key={district}
-                  className={`district-card ${selectedDistrict === district ? 'active' : ''}`}
-                  onClick={() => {
-                    setSelectedDistrict(district);
-                    setSelectedGroup('A+');
-                    setActiveChat(null);
-                  }}
-                >
-                  <strong>{district}</strong>
-                  <span>{districtInventory[district]['A+']} A+ units</span>
-                </button>
+          <div className="division-list">
+            {visibleDivisions.length > 0 ? (
+              visibleDivisions.map(({ division, districts }) => (
+                <div className="division-block" key={division}>
+                  <button
+                    type="button"
+                    className={`division-card ${expandedDivision === division ? 'active' : ''}`}
+                    onClick={() => {
+                      setExpandedDivision(expandedDivision === division ? null : division);
+                      setSelectedDistrict(null);
+                    }}
+                  >
+                    <span>
+                      <strong>{division} Division</strong>
+                      <small>{divisions[division].length} districts</small>
+                    </span>
+                    <b>{expandedDivision === division ? '−' : '+'}</b>
+                  </button>
+                  {expandedDivision === division && (
+                    <div className="district-grid">
+                      {districts.map((district) => (
+                        <button
+                          type="button"
+                          key={district}
+                          className={`district-card ${selectedDistrict === district ? 'active' : ''}`}
+                          onClick={() => {
+                            setSelectedDistrict(district);
+                            setSelectedGroup('A+');
+                            setActiveChat(null);
+                          }}
+                        >
+                          <strong>{district}</strong>
+                          <span>Click to view availability</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))
             ) : (
               <p className="empty-state">No districts match your search. Try another name.</p>
             )}
           </div>
 
-          <div className="district-insights">
+          {selectedDistrict && <div className="district-insights">
             <span className="insight-pill">
               Top group <strong>{selectedGroup}</strong>
             </span>
@@ -328,9 +418,70 @@ function App() {
             <span className="insight-pill">
               Low supply: <strong>{lowSupplyGroups.length ? lowSupplyGroups.join(', ') : 'none'}</strong>
             </span>
-          </div>
+          </div>}
         </section>
 
+        <section className="section-card registration-card">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">Join the network</p>
+              <h2>Register as a blood donor</h2>
+            </div>
+            <p>Add your name under the district where you are available to help.</p>
+          </div>
+
+          <form className="registration-form" onSubmit={handleRegistration}>
+            <label>
+              Name
+              <input required value={registration.name} onChange={(event) => setRegistration({ ...registration, name: event.target.value })} placeholder="Your full name" />
+            </label>
+            <label>
+              Blood group
+              <select value={registration.blood} onChange={(event) => setRegistration({ ...registration, blood: event.target.value })}>
+                {bloodGroups.map((group) => <option key={group}>{group}</option>)}
+              </select>
+            </label>
+            <label>
+              Division
+              <select
+                value={registration.division}
+                onChange={(event) => {
+                  const division = event.target.value;
+                  setRegistration({ ...registration, division, district: divisions[division][0] });
+                }}
+              >
+                {Object.keys(divisions).map((division) => <option key={division}>{division}</option>)}
+              </select>
+            </label>
+            <label>
+              District
+              <select value={registration.district} onChange={(event) => setRegistration({ ...registration, district: event.target.value })}>
+                {divisions[registration.division].map((district) => <option key={district}>{district}</option>)}
+              </select>
+            </label>
+            <label>
+              Area
+              <input value={registration.city} onChange={(event) => setRegistration({ ...registration, city: event.target.value })} placeholder="Area or town" />
+            </label>
+            <label>
+              Mobile number
+              <input required value={registration.mobile} onChange={(event) => setRegistration({ ...registration, mobile: event.target.value })} placeholder="01XXXXXXXXX" />
+            </label>
+            <label>
+              Available time
+              <select value={registration.availableTime} onChange={(event) => setRegistration({ ...registration, availableTime: event.target.value })}>
+                <option>Any time</option>
+                <option>Morning</option>
+                <option>Afternoon</option>
+                <option>Evening</option>
+              </select>
+            </label>
+            <button type="submit" className="primary-btn">Register donor</button>
+          </form>
+          {registrationMessage && <p className="registration-success">{registrationMessage}</p>}
+        </section>
+
+        {selectedDistrict ? <>
         <section className="stats-grid">
           <article className="stat-card">
             <h3>Blood Donation Units</h3>
@@ -544,6 +695,13 @@ function App() {
             </div>
           </aside>
         </section>
+        </> : (
+          <section className="section-card district-prompt">
+            <p className="eyebrow">Next step</p>
+            <h2>Select a district to view availability</h2>
+            <p>Choose a district from the selected division. Blood groups and available donors will appear here after you select it.</p>
+          </section>
+        )}
       </main>
     </div>
   );

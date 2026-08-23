@@ -324,6 +324,97 @@ textarea {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.division-list {
+  display: grid;
+  gap: 12px;
+}
+
+.division-block {
+  display: grid;
+  gap: 10px;
+}
+
+.division-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.division-card:hover,
+.division-card.active {
+  background: rgba(239, 68, 68, 0.3);
+  transform: translateY(-1px);
+}
+
+.division-card strong,
+.division-card small {
+  display: block;
+}
+
+.division-card small {
+  margin-top: 3px;
+  color: #ffd2d2;
+  font-size: 0.85rem;
+}
+
+.division-card b {
+  color: #ffb3b3;
+  font-size: 1.35rem;
+}
+
+.registration-form {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.registration-form label {
+  display: grid;
+  gap: 6px;
+  color: #ffd2d2;
+  font-weight: 700;
+}
+
+.registration-form input,
+.registration-form select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.registration-form select option {
+  color: #1f2937;
+}
+
+.registration-form input:focus,
+.registration-form select:focus {
+  outline: none;
+  border-color: #ffb3b3;
+}
+
+.registration-form .primary-btn {
+  align-self: end;
+  min-height: 46px;
+}
+
+.registration-success {
+  margin: 16px 0 0;
+  color: #bbf7d0;
+  font-weight: 700;
+}
+
 .blood-group-grid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
@@ -704,7 +795,8 @@ textarea {
   .district-grid,
   .stats-grid,
   .content-grid,
-  .inventory-row-group {
+  .inventory-row-group,
+  .registration-form {
     grid-template-columns: 1fr;
   }
 
