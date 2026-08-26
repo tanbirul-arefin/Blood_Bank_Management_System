@@ -1,710 +1,95 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
-const bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
-
-const districtOptions = [
-  'Dhaka',
-  'Faridpur',
-  'Gazipur',
-  'Gopalganj',
-  'Jamalpur',
-  'Kishoreganj',
-  'Madaripur',
-  'Manikganj',
-  'Munshiganj',
-  'Narayanganj',
-  'Narsingdi',
-  'Rajbari',
-  'Shariatpur',
-  'Tangail',
-  'Bogura',
-  'Joypurhat',
-  'Naogaon',
-  'Natore',
-  'Pabna',
-  'Rajshahi',
-  'Sirajganj',
-  'Chapainawabganj',
-  'Dinajpur',
-  'Gaibandha',
-  'Kurigram',
-  'Lalmonirhat',
-  'Nilphamari',
-  'Panchagarh',
-  'Rangpur',
-  'Thakurgaon',
-  'Habiganj',
-  'Moulvibazar',
-  'Sunamganj',
-  'Sylhet',
-  'Brahmanbaria',
-  'Chandpur',
-  'Chittagong',
-  'Cumilla',
-  "Cox's Bazar",
-  'Feni',
-  'Khagrachhari',
-  'Lakshmipur',
-  'Noakhali',
-  'Rangamati',
-  'Bandarban',
-  'Bhola',
-  'Jhalokathi',
-  'Patuakhali',
-  'Pirojpur',
-  'Barisal',
-  'Barguna',
-  'Jashore',
-  'Jhenaidah',
-  'Khulna',
-  'Kushtia',
-  'Magura',
-  'Meherpur',
-  'Narail',
-  'Satkhira',
-  'Chuadanga',
-  'Bagerhat',
-  'Mymensingh',
-  'Netrokona',
-  'Sherpur',
-];
-
-const divisions = {
-  Dhaka: ['Dhaka', 'Faridpur', 'Gazipur', 'Gopalganj', 'Kishoreganj', 'Madaripur', 'Manikganj', 'Munshiganj', 'Narayanganj', 'Narsingdi', 'Rajbari', 'Shariatpur', 'Tangail'],
-  Rajshahi: ['Bogura', 'Joypurhat', 'Naogaon', 'Natore', 'Pabna', 'Rajshahi', 'Sirajganj', 'Chapainawabganj'],
-  Rangpur: ['Dinajpur', 'Gaibandha', 'Kurigram', 'Lalmonirhat', 'Nilphamari', 'Panchagarh', 'Rangpur', 'Thakurgaon'],
-  Sylhet: ['Habiganj', 'Moulvibazar', 'Sunamganj', 'Sylhet'],
-  Chattogram: ['Bandarban', 'Brahmanbaria', 'Chandpur', 'Chittagong', "Cox's Bazar", 'Cumilla', 'Feni', 'Khagrachhari', 'Lakshmipur', 'Noakhali', 'Rangamati'],
-  Barisal: ['Barguna', 'Barisal', 'Bhola', 'Jhalokathi', 'Patuakhali', 'Pirojpur'],
-  Khulna: ['Bagerhat', 'Chuadanga', 'Jashore', 'Jhenaidah', 'Khulna', 'Kushtia', 'Magura', 'Meherpur', 'Narail', 'Satkhira'],
-  Mymensingh: ['Jamalpur', 'Mymensingh', 'Netrokona', 'Sherpur'],
-};
-
-const districtInventory = Object.fromEntries(
-  districtOptions.map((district, index) => {
-    if (district === 'Dhaka') {
-      return [district, { 'A+': 50, 'A-': 15, 'B+': 35, 'B-': 12, 'AB+': 20, 'AB-': 8, 'O+': 55, 'O-': 15 }];
-    }
-
-    const base = [20, 8, 24, 7, 12, 5, 28, 6];
-    const boost = district === 'Sylhet' ? 10 : district === 'Joypurhat' ? 8 : 0;
-
-    const availability = {};
-    bloodGroups.forEach((group, groupIndex) => {
-      const value = base[groupIndex] + (index % 5) * 2 + boost + (group.includes('-') ? 1 : 0);
-      availability[group] = Math.max(3, value);
-    });
-
-    return [district, availability];
-  })
-);
-
-const donorProfiles = [
-  { id: 1, name: 'Nadia Rahman', blood: 'A+', district: 'Sylhet', city: 'Zindabazar', address: 'House 12, Road 3, Zindabazar', mobile: '+8801712345678', status: 'Available', availableTime: 'Morning 8 AM - 12 PM', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80' },
-  { id: 2, name: 'Sajid Hossain', blood: 'A+', district: 'Sylhet', city: 'Tilagor', address: 'Flat 4B, Tilagor Housing', mobile: '+8801812345678', status: 'Ready', availableTime: 'Evening 6 PM - 9 PM', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80' },
-  { id: 3, name: 'Farhana Ali', blood: 'B+', district: 'Sylhet', city: 'Amberkhana', address: 'Road 5, Amberkhana', mobile: '+8801912345678', status: 'Active', availableTime: 'Any time this week', image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80' },
-  { id: 4, name: 'Rafiq Islam', blood: 'O+', district: 'Dhaka', city: 'Mohammadpur', address: 'House 4, Block C, Mohammadpur', mobile: '+8801612345678', status: 'Available', availableTime: 'Afternoon 2 PM - 5 PM', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80' },
-  { id: 17, name: 'Arman Hossain', blood: 'A+', district: 'Dhaka', city: 'Dhanmondi', address: 'House 22, Road 5, Dhanmondi', mobile: '+8801712348899', status: 'Ready', availableTime: 'Morning 9 AM - 12 PM', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80' },
-  { id: 18, name: 'Nabila Chowdhury', blood: 'A+', district: 'Dhaka', city: 'Uttara', address: 'Sector 7, Uttara', mobile: '+8801912347788', status: 'Available', availableTime: 'Evening 6 PM - 8 PM', image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80' },
-  { id: 5, name: 'Mim Akter', blood: 'O+', district: 'Chittagong', city: 'GEC', address: 'GEC Circle, Chittagong', mobile: '+8801512345678', status: 'Available', availableTime: 'Morning 9 AM - 1 PM', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80' },
-  { id: 6, name: 'Tamim Rahman', blood: 'B+', district: 'Joypurhat', city: 'Sadar', address: 'Sadar Road, Joypurhat', mobile: '+8801712341234', status: 'Ready', availableTime: 'Evening after 6 PM', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80' },
-  { id: 7, name: 'Shila Das', blood: 'A+', district: 'Joypurhat', city: 'Pouroshova', address: 'Pouroshova, Joypurhat', mobile: '+8801812341234', status: 'Available', availableTime: 'Morning only', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80' },
-  { id: 8, name: 'Arif Hossain', blood: 'O-', district: 'Rangpur', city: 'City Gate', address: 'City Gate, Rangpur', mobile: '+8801712349999', status: 'Available', availableTime: 'Any time', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80' },
-  { id: 9, name: 'Sadia Noor', blood: 'AB+', district: 'Rangpur', city: 'Lalbagh', address: 'Lalbagh, Rangpur', mobile: '+8801912341244', status: 'Ready', availableTime: 'Sunday morning', image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80' },
-  { id: 10, name: 'Rahim Uddin', blood: 'B-', district: 'Khulna', city: 'Khalishpur', address: 'House 11, Khalishpur', mobile: '+8801312341111', status: 'Available', availableTime: 'Night 8 PM - 10 PM', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80' },
-  { id: 11, name: 'Mariya Begum', blood: 'A-', district: 'Barisal', city: 'Nawabpura', address: 'Nawabpura, Barisal', mobile: '+8801711112222', status: 'Ready', availableTime: 'Sunday afternoon', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80' },
-  { id: 12, name: 'Anik Chowdhury', blood: 'O+', district: 'Cumilla', city: 'Town Hall', address: 'Town Hall Road, Cumilla', mobile: '+8801911113333', status: 'Available', availableTime: 'Morning 10 AM - 2 PM', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80' },
-  { id: 13, name: 'Liza Haque', blood: 'B+', district: 'Mymensingh', city: 'Kachari', address: 'Kachari Road, Mymensingh', mobile: '+8801811114444', status: 'Available', availableTime: 'Today 3 PM - 6 PM', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80' },
-  { id: 14, name: 'Rony Islam', blood: 'AB-', district: 'Dhaka', city: 'Uttara', address: 'Uttara Sector 10', mobile: '+8801511115555', status: 'Ready', availableTime: 'Weekend', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80' },
-  { id: 15, name: 'Nusrat Jahan', blood: 'A+', district: 'Chittagong', city: 'Agrabad', address: 'Agrabad, Chittagong', mobile: '+8801711116666', status: 'Available', availableTime: 'Any time', image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80' },
-  { id: 16, name: 'Ayon Sarker', blood: 'O+', district: 'Sylhet', city: 'Shahjalal Upashahar', address: 'Shahjalal Upashahar, Sylhet', mobile: '+8801911117777', status: 'Ready', availableTime: 'Evening', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80' },
-];
-
-const completeDonorProfiles = [
-  ...donorProfiles,
-  ...districtOptions.flatMap((district, districtIndex) =>
-    bloodGroups
-      .filter((blood) => !donorProfiles.some((donor) => donor.district === district && donor.blood === blood))
-      .map((blood, bloodIndex) => ({
-        id: 1000 + districtIndex * bloodGroups.length + bloodIndex,
-        name: `${district} Blood Support ${blood}`,
-        blood,
-        district,
-        city: 'Sadar',
-        address: `Sadar, ${district}`,
-        mobile: `+8801999${String(districtIndex).padStart(2, '0')}${String(bloodIndex).padStart(2, '02')}`,
-        status: 'Available',
-        availableTime: 'Any time',
-        image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80',
-      }))
-  ),
-];
-
-const requestData = [
-  { id: 101, name: 'Rina Akter', district: 'Mymensingh', blood: 'O+', hospital: 'Mymensingh Medical College', contact: '+8801710001001' },
-  { id: 102, name: 'Hamidul Islam', district: 'Mymensingh', blood: 'A+', hospital: 'Sadar Hospital', contact: '+8801710001002' },
-  { id: 103, name: 'Sabbir Rahman', district: 'Sylhet', blood: 'B+', hospital: 'Osmani Medical College', contact: '+8801710001003' },
-  { id: 104, name: 'Tania Begum', district: 'Joypurhat', blood: 'AB+', hospital: 'Joypurhat General Hospital', contact: '+8801710001004' },
-  { id: 105, name: 'Faruk Hossain', district: 'Dhaka', blood: 'A-', hospital: 'Square Hospital', contact: '+8801710001005' },
+const bloodGroups = ['সব গ্রুপ', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+const districts = ['ঢাকা', 'চট্টগ্রাম', 'সিলেট', 'রাজশাহী', 'খুলনা', 'ময়মনসিংহ', 'রংপুর', 'বরিশাল', 'কুমিল্লা', 'জয়পুরহাট'];
+const stockData = { 'A+': 8, 'A-': 3, 'B+': 6, 'B-': 2, 'AB+': 4, 'AB-': 1, 'O+': 10, 'O-': 2 };
+const starterDonors = [
+  { id: 1, name: 'নাদিয়া রহমান', blood: 'A+', district: 'সিলেট', area: 'জিন্দাবাজার', phone: '01712-345678', availability: 'সকাল ৮টা - দুপুর ১২টা', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80', note: 'জরুরি প্রয়োজনে পাশে থাকতে চাই।', rating: 5, reviews: 18, verified: true },
+  { id: 2, name: 'সাজিদ হোসেন', blood: 'A+', district: 'ঢাকা', area: 'ধানমন্ডি', phone: '01812-345678', availability: 'সন্ধ্যা ৬টা - রাত ৯টা', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80', note: 'রক্ত দেওয়া আমার নিয়মিত মানবিক কাজ।', rating: 4.9, reviews: 12, verified: true },
+  { id: 3, name: 'ফারহানা আলী', blood: 'B+', district: 'চট্টগ্রাম', area: 'জিইসি মোড়', phone: '01912-345678', availability: 'এই সপ্তাহে যেকোনো সময়', image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80', note: 'প্রয়োজনে কল করুন, সম্ভব হলে অবশ্যই আসব।', rating: 5, reviews: 9, verified: true },
+  { id: 4, name: 'আরিফ হোসেন', blood: 'O-', district: 'রংপুর', area: 'সিটি গেট', phone: '01612-345678', availability: 'যেকোনো সময়', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80', note: 'O- জরুরি donor হিসেবে যুক্ত আছি।', rating: 4.8, reviews: 21, verified: true },
+  { id: 5, name: 'মিম আক্তার', blood: 'O+', district: 'সিলেট', area: 'আম্বরখানা', phone: '01512-345678', availability: 'সকাল ৯টা - দুপুর ১টা', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80', note: 'এক ব্যাগ রক্ত, একটি জীবন।', rating: 4.9, reviews: 15, verified: false },
+  { id: 6, name: 'তামিম রহমান', blood: 'B+', district: 'জয়পুরহাট', area: 'সদর', phone: '01711-241234', availability: 'সন্ধ্যা ৬টার পর', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80', note: 'রক্তের প্রয়োজন হলে জানাবেন।', rating: 4.7, reviews: 7, verified: true },
 ];
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [loginError, setLoginError] = useState('');
-  const [selectedDistrict, setSelectedDistrict] = useState(null);
-  const [expandedDivision, setExpandedDivision] = useState('Dhaka');
-  const [selectedGroup, setSelectedGroup] = useState('A+');
-  const [districtSearch, setDistrictSearch] = useState('');
-  const [savedContacts, setSavedContacts] = useState([]);
-  const [activeChat, setActiveChat] = useState(null);
-  const [chatMessage, setChatMessage] = useState('Hi, I need urgent support. Can you help?');
-  const [registeredDonors, setRegisteredDonors] = useState([]);
-  const [registration, setRegistration] = useState({
-    name: '',
-    blood: 'A+',
-    division: 'Dhaka',
-    district: 'Dhaka',
-    city: '',
-    mobile: '',
-    availableTime: 'Any time',
-  });
-  const [registrationMessage, setRegistrationMessage] = useState('');
+  const [donors, setDonors] = useState(starterDonors);
+  const [query, setQuery] = useState('');
+  const [districtQuery, setDistrictQuery] = useState('');
+  const [blood, setBlood] = useState('সব গ্রুপ');
+  const [district, setDistrict] = useState('সব এলাকা');
+  const [activeTab, setActiveTab] = useState('find');
+  const [selectedDonor, setSelectedDonor] = useState(null);
+  const [notice, setNotice] = useState('');
+  const [registration, setRegistration] = useState({ name: '', blood: 'A+', district: 'ঢাকা', area: '', phone: '', age: '', lastDonation: '', availability: 'যেকোনো সময়', image: '', note: '' });
+  const [request, setRequest] = useState({ name: '', patient: '', blood: 'A+', bags: 1, location: '', phone: '' });
 
-  const handleLogin = (event) => {
-    event.preventDefault();
-    const trimmedUsername = username.trim();
-    const trimmedPassword = password.trim();
+  const filteredDonors = useMemo(() => donors.filter((donor) => {
+    const searchText = `${donor.name} ${donor.area}`.toLowerCase();
+    const districtText = donor.district.toLowerCase();
+    return (blood === 'সব গ্রুপ' || donor.blood === blood) && (district === 'সব এলাকা' || donor.district === district) && searchText.includes(query.toLowerCase()) && districtText.includes(districtQuery.toLowerCase());
+  }), [donors, query, districtQuery, blood, district]);
 
-    if (trimmedUsername === 'admin' && trimmedPassword === '1234') {
-      setIsLoggedIn(true);
-      setLoginError('');
-      setUsername('');
-      setPassword('');
-      return;
-    }
+  const handleImageChange = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-    setLoginError('Invalid username or password. Try admin / 1234.');
+    const reader = new FileReader();
+    reader.onload = () => updateRegistration('image', reader.result);
+    reader.readAsDataURL(file);
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    setLoginError('');
-    setActiveChat(null);
-    setSavedContacts([]);
-  };
-
-  const allDonors = [...completeDonorProfiles, ...registeredDonors];
+  const updateRegistration = (field, value) => setRegistration((current) => ({ ...current, [field]: value }));
 
   const handleRegistration = (event) => {
     event.preventDefault();
-    const donor = {
-      id: Date.now(),
-      ...registration,
-      address: `${registration.city || 'Sadar'}, ${registration.district}`,
-      status: 'Available',
-      image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80',
-    };
-    setRegisteredDonors((current) => [...current, donor]);
-    setSelectedDistrict(registration.district);
-    setExpandedDivision(registration.division);
-    setSelectedGroup(registration.blood);
-    setRegistrationMessage(`${registration.name} successfully registered in ${registration.district}.`);
-    setRegistration({ ...registration, name: '', city: '', mobile: '' });
+    const donor = { ...registration, id: Date.now(), age: Number(registration.age), image: registration.image || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80', rating: 0, reviews: 0, verified: false };
+    setDonors((current) => [donor, ...current]);
+    setRegistration({ name: '', blood: 'A+', district: 'ঢাকা', area: '', phone: '', age: '', lastDonation: '', availability: 'যেকোনো সময়', image: '', note: '' });
+    setNotice('আপনার donor profile সফলভাবে যুক্ত হয়েছে।');
+    setActiveTab('find');
+    setQuery(donor.name);
   };
 
-  const inventoryForDistrict = districtInventory[selectedDistrict] || Object.fromEntries(bloodGroups.map((group) => [group, 0]));
-  const districtDonors = selectedDistrict ? allDonors.filter((donor) => donor.district === selectedDistrict) : [];
-  const groupDonors = allDonors.filter(
-    (donor) => donor.district === selectedDistrict && donor.blood === selectedGroup
-  );
-  const districtRequests = selectedDistrict ? requestData.filter((request) => request.district === selectedDistrict).slice(0, 3) : [];
-  const totalUnits = Object.values(inventoryForDistrict).reduce((sum, value) => sum + value, 0);
-  const selectedGroupUnits = inventoryForDistrict[selectedGroup];
-  const filteredDistricts = districtOptions.filter((district) =>
-    district.toLowerCase().includes(districtSearch.toLowerCase())
-  );
-  const visibleDivisions = Object.entries(divisions).map(([division, districts]) => ({
-    division,
-    districts: districts.filter((district) => filteredDistricts.includes(district)),
-  })).filter(({ districts }) => districts.length > 0);
-  const lowSupplyGroups = bloodGroups.filter((group) => {
-    const donors = districtDonors.filter((donor) => donor.blood === group).length;
-    return inventoryForDistrict[group] <= 10 && donors <= 2;
-  });
-
-  const toggleSaveContact = (donorId) => {
-    setSavedContacts((current) =>
-      current.includes(donorId) ? current.filter((item) => item !== donorId) : [...current, donorId]
-    );
+  const handleRequest = (event) => {
+    event.preventDefault();
+    const availableUnits = stockData[request.blood];
+    setNotice(availableUnits >= Number(request.bags)
+      ? `${request.blood} blood request received. Stock থেকে ${request.bags} bag দেওয়া যাবে।`
+      : `${request.blood} stock কম আছে। ${request.location || 'আপনার এলাকার'} eligible donors-কে request পাঠানো হয়েছে।`);
+    setRequest({ name: '', patient: '', blood: 'A+', bags: 1, location: '', phone: '' });
   };
 
-  const savedContactList = allDonors.filter((donor) => savedContacts.includes(donor.id));
-  const activeDonorInfo =
-    activeChat && activeChat.district === selectedDistrict && activeChat.blood === selectedGroup
-      ? activeChat
-      : null;
-
-  if (!isLoggedIn) {
-    return (
-      <div className="page-shell login-shell">
-        <div className="login-card">
-          <div className="login-heading">
-            <p className="hero-kicker">Blood Management Login</p>
-            <h1>Login first to continue</h1>
-            <p>Enter your credentials to access donor availability and district requests.</p>
-          </div>
-          <form className="login-form" onSubmit={handleLogin}>
-            <label className="login-label" htmlFor="username">Username</label>
-            <input
-              id="username"
-              type="text"
-              className="login-field"
-              value={username}
-              onChange={(event) => setUsername(event.target.value)}
-              placeholder="admin"
-              autoComplete="username"
-            />
-            <label className="login-label" htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              className="login-field"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder="1234"
-              autoComplete="current-password"
-            />
-            {loginError && <p className="login-error">{loginError}</p>}
-            <button type="submit" className="primary-btn login-submit">Login</button>
-          </form>
-          <p className="login-help">Use <strong>admin</strong> / <strong>1234</strong> to enter the app.</p>
-        </div>
-      </div>
-    );
-  }
+  const handleReview = (event) => {
+    event.preventDefault();
+    const rating = Number(new FormData(event.currentTarget).get('rating'));
+    setDonors((current) => current.map((donor) => donor.id === selectedDonor.id ? { ...donor, rating: donor.reviews ? ((donor.rating * donor.reviews) + rating) / (donor.reviews + 1) : rating, reviews: donor.reviews + 1 } : donor));
+    setSelectedDonor(null);
+    setNotice('আপনার review যুক্ত হয়েছে। ধন্যবাদ।');
+  };
 
   return (
-    <div className="page-shell">
-      <main className="dashboard">
-        <header className="hero-panel">
-          <div className="hero-copy">
-            <p className="hero-kicker">Blood Donation Network</p>
-            <h1>Find nearby blood donors faster with a district-first discovery flow.</h1>
-            <p>
-              Choose your district, compare available blood units, and connect with willing donors in a clean, local workflow.
-            </p>
-            <div className="hero-action-row">
-              <button
-                type="button"
-                className="primary-btn hero-cta"
-                onClick={() => {
-                  setSelectedDistrict(null);
-                  setExpandedDivision('Dhaka');
-                  setSelectedGroup('A+');
-                  setActiveChat(null);
-                }}
-              >
-                Start with Dhaka
-              </button>
-              <button type="button" className="ghost-btn hero-secondary">
-                See urgent requests
-              </button>
-              <button type="button" className="ghost-btn" onClick={handleLogout}>
-                Logout
-              </button>
-            </div>
-            <div className="hero-pill-row">
-              <span>Fast local support</span>
-              <span>Verified donor details</span>
-              <span>Real-time availability</span>
-            </div>
-          </div>
-          <div className="hero-summary hero-highlight-card">
-            <div className="hero-summary-main">
-              <span className="summary-tag">Today’s readiness</span>
-              <h2>Keep every district ready for emergencies.</h2>
-              <p>Monitor active units, discover nearby donors, and respond immediately to urgent requests.</p>
-            </div>
-            <div className="hero-summary-grid">
-              <div className="hero-summary-item">
-                <strong>{districtOptions.length}</strong>
-                <span>Districts</span>
-              </div>
-              <div className="hero-summary-item">
-                <strong>{allDonors.length}</strong>
-                <span>Donor Profiles</span>
-              </div>
-              <div className="hero-summary-item hero-summary-large">
-                <strong>24/7</strong>
-                <span>Emergency Support</span>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <section className="section-card">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">Step 1</p>
-              <h2>Select District</h2>
-            </div>
-            <p>Click any district to view its blood units and donor availability.</p>
-          </div>
-
-          <div className="search-row">
-            <input
-              type="text"
-              placeholder="Search districts..."
-              value={districtSearch}
-              onChange={(event) => setDistrictSearch(event.target.value)}
-              className="search-control"
-            />
-            <span className="search-note">🔎 Filter districts by name</span>
-          </div>
-
-          <div className="division-list">
-            {visibleDivisions.length > 0 ? (
-              visibleDivisions.map(({ division, districts }) => (
-                <div className="division-block" key={division}>
-                  <button
-                    type="button"
-                    className={`division-card ${expandedDivision === division ? 'active' : ''}`}
-                    onClick={() => {
-                      setExpandedDivision(expandedDivision === division ? null : division);
-                      setSelectedDistrict(null);
-                    }}
-                  >
-                    <span>
-                      <strong>{division} Division</strong>
-                      <small>{divisions[division].length} districts</small>
-                    </span>
-                    <b>{expandedDivision === division ? '−' : '+'}</b>
-                  </button>
-                  {expandedDivision === division && (
-                    <div className="district-grid">
-                      {districts.map((district) => (
-                        <button
-                          type="button"
-                          key={district}
-                          className={`district-card ${selectedDistrict === district ? 'active' : ''}`}
-                          onClick={() => {
-                            setSelectedDistrict(district);
-                            setSelectedGroup('A+');
-                            setActiveChat(null);
-                          }}
-                        >
-                          <strong>{district}</strong>
-                          <span>Click to view availability</span>
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))
-            ) : (
-              <p className="empty-state">No districts match your search. Try another name.</p>
-            )}
-          </div>
-
-          {selectedDistrict && <div className="district-insights">
-            <span className="insight-pill">
-              Top group <strong>{selectedGroup}</strong>
-            </span>
-            <span className="insight-pill">
-              {selectedGroupUnits} units available
-            </span>
-            <span className="insight-pill">
-              Low supply: <strong>{lowSupplyGroups.length ? lowSupplyGroups.join(', ') : 'none'}</strong>
-            </span>
-          </div>}
-        </section>
-
-        <section className="section-card registration-card">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">Join the network</p>
-              <h2>Register as a blood donor</h2>
-            </div>
-            <p>Add your name under the district where you are available to help.</p>
-          </div>
-
-          <form className="registration-form" onSubmit={handleRegistration}>
-            <label>
-              Name
-              <input required value={registration.name} onChange={(event) => setRegistration({ ...registration, name: event.target.value })} placeholder="Your full name" />
-            </label>
-            <label>
-              Blood group
-              <select value={registration.blood} onChange={(event) => setRegistration({ ...registration, blood: event.target.value })}>
-                {bloodGroups.map((group) => <option key={group}>{group}</option>)}
-              </select>
-            </label>
-            <label>
-              Division
-              <select
-                value={registration.division}
-                onChange={(event) => {
-                  const division = event.target.value;
-                  setRegistration({ ...registration, division, district: divisions[division][0] });
-                }}
-              >
-                {Object.keys(divisions).map((division) => <option key={division}>{division}</option>)}
-              </select>
-            </label>
-            <label>
-              District
-              <select value={registration.district} onChange={(event) => setRegistration({ ...registration, district: event.target.value })}>
-                {divisions[registration.division].map((district) => <option key={district}>{district}</option>)}
-              </select>
-            </label>
-            <label>
-              Area
-              <input value={registration.city} onChange={(event) => setRegistration({ ...registration, city: event.target.value })} placeholder="Area or town" />
-            </label>
-            <label>
-              Mobile number
-              <input required value={registration.mobile} onChange={(event) => setRegistration({ ...registration, mobile: event.target.value })} placeholder="01XXXXXXXXX" />
-            </label>
-            <label>
-              Available time
-              <select value={registration.availableTime} onChange={(event) => setRegistration({ ...registration, availableTime: event.target.value })}>
-                <option>Any time</option>
-                <option>Morning</option>
-                <option>Afternoon</option>
-                <option>Evening</option>
-              </select>
-            </label>
-            <button type="submit" className="primary-btn">Register donor</button>
-          </form>
-          {registrationMessage && <p className="registration-success">{registrationMessage}</p>}
-        </section>
-
-        {selectedDistrict ? <>
-        <section className="stats-grid">
-          <article className="stat-card">
-            <h3>Blood Donation Units</h3>
-            <strong>{totalUnits}</strong>
-            <span>{selectedDistrict} has active units</span>
-          </article>
-          <article className="stat-card">
-            <h3>Available Donors</h3>
-            <strong>{districtDonors.length}</strong>
-            <span>registered in this district</span>
-          </article>
-          <article className="stat-card">
-            <h3>Urgent Requests</h3>
-            <strong>{districtRequests.length}</strong>
-            <span>recent requests</span>
-          </article>
-        </section>
-
-        <section className="section-card">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">Step 2</p>
-              <h2>Available Blood Units in {selectedDistrict}</h2>
-            </div>
-            <p>All blood groups for this district are shown below, and each one can be opened to view the matching donors.</p>
-          </div>
-
-          <div className="inventory-list">
-            {bloodGroups.reduce((rows, group, index) => {
-              if (index % 2 === 0) {
-                rows.push([]);
-              }
-              rows[rows.length - 1].push(group);
-              return rows;
-            }, []).map((rowGroups, rowIndex) => (
-              <div className="inventory-row-group" key={rowIndex}>
-                {rowGroups.map((group) => {
-                  const units = inventoryForDistrict[group];
-                  const donors = districtDonors.filter((donor) => donor.blood === group).length;
-
-                  return (
-                    <button
-                      type="button"
-                      key={group}
-                      className={`inventory-row ${selectedGroup === group ? 'active' : ''}`}
-                      onClick={() => setSelectedGroup(group)}
-                    >
-                      <div>
-                        <strong>{group}</strong>
-                        <span>{units} units available</span>
-                      </div>
-                      <div>
-                        <strong>{donors}</strong>
-                        <span>donors</span>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="section-card">
-          <div className="section-heading">
-            <div>
-              <p className="eyebrow">Requests</p>
-              <h2>Recent Requests in {selectedDistrict}</h2>
-            </div>
-            <p>These are current requests linked to this district.</p>
-          </div>
-
-          <div className="request-list">
-            {districtRequests.length > 0 ? (
-              districtRequests.map((request) => (
-                <article className="request-card" key={request.id}>
-                  <div>
-                    <h3>{request.name}</h3>
-                    <p><strong>Blood:</strong> {request.blood}</p>
-                    <p><strong>Hospital:</strong> {request.hospital}</p>
-                  </div>
-                  <span>{request.contact}</span>
-                </article>
-              ))
-            ) : (
-              <p className="empty-state">No recent requests for this district.</p>
-            )}
-          </div>
-        </section>
-
-        <section className="content-grid">
-          <div className="section-card donor-panel">
-            <div className="section-heading">
-              <div>
-                <p className="eyebrow">Step 3</p>
-                <h2>{selectedGroup} Donors in {selectedDistrict}</h2>
-              </div>
-              <p>Each donor below includes their name, number, address, and availability time.</p>
-            </div>
-
-            <div className="pinned-box">
-              <div className="saved-title-row">
-                <h3>Saved SMS Contacts</h3>
-                <span>{savedContactList.length} saved</span>
-              </div>
-              {savedContactList.length > 0 ? (
-                <div className="pinned-list">
-                  {savedContactList.map((donor) => (
-                    <div key={donor.id} className="pinned-item">
-                      <span>{donor.name}</span>
-                      <button type="button" className="chat-mini-btn" onClick={() => setActiveChat(donor)}>
-                        Chat
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="empty-state">No donors saved yet. Tap “Save for SMS” on any donor card.</p>
-              )}
-            </div>
-
-            <div className="donor-list">
-              {groupDonors.length > 0 ? (
-                groupDonors.map((donor) => {
-                  const isSaved = savedContacts.includes(donor.id);
-
-                  return (
-                    <article className="donor-card" key={donor.id}>
-                      <img src={donor.image} alt={donor.name} />
-                      <div className="donor-info">
-                        <div className="donor-topline">
-                          <h3>{donor.name}</h3>
-                          <span className="status-pill">{donor.status}</span>
-                        </div>
-                        <p><strong>Blood:</strong> {donor.blood}</p>
-                        <p><strong>Area:</strong> {donor.city}, {donor.district}</p>
-                        <p><strong>Address:</strong> {donor.address}</p>
-                        <p><strong>Phone:</strong> {donor.mobile}</p>
-                        <p><strong>Available Time:</strong> {donor.availableTime}</p>
-                        <div className="action-row">
-                          <button type="button" className={`save-btn ${isSaved ? 'saved' : ''}`} onClick={() => toggleSaveContact(donor.id)}>
-                            {isSaved ? 'Saved for SMS' : 'Save for SMS'}
-                          </button>
-                          <button type="button" className="primary-btn" onClick={() => setActiveChat(donor)}>
-                            Chat
-                          </button>
-                        </div>
-                      </div>
-                    </article>
-                  );
-                })
-              ) : (
-                <p className="empty-state">No donors found for this district and blood group yet.</p>
-              )}
-            </div>
-          </div>
-
-          <aside className="section-card sidebar-card">
-            <div className="section-heading">
-              <div>
-                <p className="eyebrow">Quick Contact</p>
-                <h2>Open Chat</h2>
-              </div>
-            </div>
-
-            {activeDonorInfo ? (
-              <div className="chat-box">
-                <div className="chat-head">
-                  <img src={activeDonorInfo.image} alt={activeDonorInfo.name} className="chat-avatar" />
-                  <div>
-                    <h3>{activeDonorInfo.name}</h3>
-                    <p className="chat-role">Ready to respond</p>
-                  </div>
-                </div>
-                <div className="chat-bubble">
-                  <p><strong>Blood Group:</strong> {activeDonorInfo.blood}</p>
-                  <p><strong>Phone:</strong> {activeDonorInfo.mobile}</p>
-                  <p><strong>Address:</strong> {activeDonorInfo.address}</p>
-                  <p><strong>Available Time:</strong> {activeDonorInfo.availableTime}</p>
-                </div>
-                <label className="chat-label" htmlFor="messageBox">Message</label>
-                <textarea
-                  id="messageBox"
-                  className="chat-textarea"
-                  value={chatMessage}
-                  onChange={(event) => setChatMessage(event.target.value)}
-                />
-                <div className="chat-actions">
-                  <button type="button" className="primary-btn" onClick={() => setActiveChat(activeDonorInfo)}>
-                    Send Request
-                  </button>
-                  <button type="button" className="ghost-btn" onClick={() => setActiveChat(null)}>
-                    Close
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="chat-box">
-                <p>Select a donor and press Chat to open their contact details and message panel.</p>
-              </div>
-            )}
-
-            <div className="sidebar-note">
-              <h3>How it works</h3>
-              <ul>
-                <li>Choose a district</li>
-                <li>Select a blood group</li>
-                <li>Review donor details</li>
-                <li>Save and contact quickly</li>
-              </ul>
-            </div>
-          </aside>
-        </section>
-        </> : (
-          <section className="section-card district-prompt">
-            <p className="eyebrow">Next step</p>
-            <h2>Select a district to view availability</h2>
-            <p>Choose a district from the selected division. Blood groups and available donors will appear here after you select it.</p>
-          </section>
-        )}
-      </main>
+    <div className="app-shell">
+      <header className="topbar"><a className="brand" href="#top" onClick={() => setActiveTab('find')}><span className="brand-mark">+</span><span>রক্তবন্ধু<small>BloodBond Bangladesh</small></span></a><nav><button className={activeTab === 'find' ? 'nav-active' : ''} onClick={() => setActiveTab('find')}>ডোনার খুঁজুন</button><button className={activeTab === 'register' ? 'nav-active' : ''} onClick={() => setActiveTab('register')}>ডোনার হোন</button><button className={activeTab === 'stock' ? 'nav-active' : ''} onClick={() => setActiveTab('stock')}>স্টক</button><button className={activeTab === 'request' ? 'nav-active' : ''} onClick={() => setActiveTab('request')}>রক্তের অনুরোধ</button></nav><button className="emergency-btn" onClick={() => { setNotice('জরুরি সহায়তা নম্বর: ৯৯৯ অথবা ১৬২৬৩'); setActiveTab('find'); }}>জরুরি সহায়তা <span>↗</span></button></header>
+      {activeTab === 'find' ? <main id="top"><section className="hero"><div className="hero-content"><p className="overline">বাংলাদেশের trusted blood donor network</p><h1>আজ আপনার রক্তে<br /><em>বাঁচুক একটি জীবন।</em></h1><p className="hero-subtitle">আপনার কাছাকাছি verified donor খুঁজুন। রক্তের গ্রুপ, এলাকা এবং availability অনুযায়ী সহজেই যোগাযোগ করুন।</p><div className="hero-actions"><button className="primary-btn" onClick={() => document.getElementById('directory').scrollIntoView({ behavior: 'smooth' })}>ডোনার খুঁজুন <span>↓</span></button><button className="text-btn" onClick={() => setActiveTab('register')}>আমি donor হতে চাই <span>→</span></button></div></div><div className="hero-visual"><div className="blood-drop">+</div><div className="hero-stat"><strong>{donors.length + 1247}</strong><span>registered donors</span></div><div className="hero-note">“একটি ছোট্ট সাহায্য<br />কারও পুরো পৃথিবী।”</div></div></section><section className="trust-strip"><div><strong>২৪/৭</strong><span>জরুরি সাপোর্ট</span></div><div><strong>৬৪</strong><span>জেলায় donor</span></div><div><strong>১,২৫৩+</strong><span>সক্রিয় সদস্য</span></div><div><strong>১০০%</strong><span>মানবিক উদ্যোগ</span></div></section><section className="directory-section" id="directory"><div className="section-intro"><div><p className="overline">আপনার প্রয়োজনের মানুষটি</p><h2>Donor directory</h2></div><p>রক্তের গ্রুপ ও এলাকা বেছে নিয়ে<br />কাছাকাছি donor খুঁজে নিন।</p></div><div className="filter-bar"><div className="search-box"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="নাম বা এলাকার নাম লিখুন..." /></div><div className="search-box district-search"><span>⌖</span><input value={districtQuery} onChange={(event) => setDistrictQuery(event.target.value)} placeholder="জেলা লিখে search করুন..." /></div><select value={blood} onChange={(event) => setBlood(event.target.value)}>{bloodGroups.map((group) => <option key={group}>{group}</option>)}</select><select value={district} onChange={(event) => setDistrict(event.target.value)}><option>সব এলাকা</option>{districts.map((item) => <option key={item}>{item}</option>)}</select></div><div className="result-line"><span><strong>{filteredDonors.length}</strong> জন donor পাওয়া গেছে</span><span className="available-key"><i /> এখন available</span></div><div className="donor-grid">{filteredDonors.map((donor) => <DonorCard key={donor.id} donor={donor} onOpen={() => setSelectedDonor(donor)} />)}</div>{filteredDonors.length === 0 && <div className="empty">এই filter-এ কোনো donor পাওয়া যায়নি। অন্য এলাকা বা blood group চেষ্টা করুন।</div>}</section><section className="impact-section" id="how-it-works"><div><p className="overline">একসাথে আমরা পারি</p><h2>রক্তের সম্পর্ক<br /><em>মানবতার সম্পর্ক।</em></h2></div><div className="impact-copy"><p>রক্তবন্ধু এমন একটি community যেখানে donor ও receiver সরাসরি একে অপরের কাছে পৌঁছাতে পারে। আপনার এক ব্যাগ রক্ত কারও পরিবারের জন্য নতুন আশার শুরু হতে পারে।</p><button className="text-btn" onClick={() => setActiveTab('register')}>community-তে যোগ দিন <span>→</span></button></div></section></main> : activeTab === 'register' ? <RegisterForm registration={registration} updateRegistration={updateRegistration} onImageChange={handleImageChange} onSubmit={handleRegistration} onBack={() => setActiveTab('find')} /> : activeTab === 'stock' ? <StockPanel onRequest={() => setActiveTab('request')} /> : <RequestForm request={request} updateRequest={(field, value) => setRequest((current) => ({ ...current, [field]: value }))} onSubmit={handleRequest} onBack={() => setActiveTab('find')} />}
+      <footer><span className="brand"><span className="brand-mark">+</span> রক্তবন্ধু</span><span>মানুষ মানুষের জন্য।</span><span>© ২০২৪ BloodBond Bangladesh</span></footer>{notice && <button className="notice" onClick={() => setNotice('')}>{notice} <span>×</span></button>}{selectedDonor && <DonorModal donor={selectedDonor} onClose={() => setSelectedDonor(null)} onReview={handleReview} />}
     </div>
   );
+}
+
+function DonorCard({ donor, onOpen }) { const eligible = !donor.age || (donor.age >= 18 && (!donor.lastDonation || (Date.now() - new Date(donor.lastDonation).getTime()) >= 90 * 24 * 60 * 60 * 1000)); return <article className="donor-card"><div className="card-image-wrap"><img src={donor.image} alt={donor.name} /><span className="online-dot" /></div><div className="card-body"><div className="card-heading"><div><h3>{donor.name}</h3><p>{donor.area}, {donor.district}</p></div><span className="blood-badge">{donor.blood}</span></div><p className="donor-note">“{donor.note}”</p><div className="card-meta"><span className={eligible ? 'eligible-status' : 'ineligible-status'}>● {eligible ? 'এখন দিতে পারবেন' : 'এখন eligible নন'}</span><span className="rating">★ {donor.rating ? donor.rating.toFixed(1) : 'নতুন'} <small>({donor.reviews})</small></span></div><button className="outline-btn" onClick={onOpen}>Profile দেখুন <span>→</span></button></div></article>; }
+
+function DonorModal({ donor, onClose, onReview }) { const eligible = !donor.age || (donor.age >= 18 && (!donor.lastDonation || (Date.now() - new Date(donor.lastDonation).getTime()) >= 90 * 24 * 60 * 60 * 1000)); return <div className="modal-backdrop" onClick={onClose}><div className="modal" onClick={(event) => event.stopPropagation()}><button className="close-btn" onClick={onClose}>×</button><div className="modal-profile"><img src={donor.image} alt={donor.name} /><div><span className="blood-badge">{donor.blood}</span><h2>{donor.name}</h2><p>{donor.area}, {donor.district} · {donor.verified ? '✓ Verified profile' : 'New member'}</p></div></div><div className="profile-details"><div><span>Phone</span><strong>{donor.phone}</strong></div><div><span>Eligibility</span><strong className={eligible ? 'eligible-status' : 'ineligible-status'}>{eligible ? 'Eligible now' : 'Wait required'}</strong></div><div><span>Availability</span><strong>{donor.availability}</strong></div><div><span>Last donation</span><strong>{donor.lastDonation || 'Never donated'}</strong></div></div><p className="profile-note">“{donor.note}”</p><a className="call-btn" href={`tel:${donor.phone}`}>☎ কল করুন</a><form className="review-form" onSubmit={onReview}><h3>এই donor সম্পর্কে আপনার অভিজ্ঞতা</h3><div className="review-fields"><select name="rating" defaultValue="5"><option value="5">★★★★★ চমৎকার</option><option value="4">★★★★ ভালো</option><option value="3">★★★ মোটামুটি</option><option value="2">★★ প্রয়োজন উন্নতি</option><option value="1">★ খারাপ</option></select><button className="primary-btn" type="submit">Review দিন</button></div></form></div></div>; }
+
+function RegisterForm({ registration, updateRegistration, onImageChange, onSubmit, onBack }) { return <main className="register-page"><div className="register-intro"><button className="back-btn" onClick={onBack}>← ফিরে যান</button><p className="overline">মানবতার পাশে দাঁড়ান</p><h1>আপনার রক্ত,<br /><em>কারও নতুন সকাল।</em></h1><p>আপনার profile যুক্ত করুন। কেউ আপনার এলাকার রক্ত খুঁজলে আপনার তথ্য দেখে সরাসরি যোগাযোগ করতে পারবে।</p><div className="register-benefits"><span>✓ আপনার এলাকার মানুষের পাশে থাকুন</span><span>✓ প্রয়োজনের সময় সহজে যোগাযোগ</span><span>✓ নিজের donor পরিচয় তৈরি করুন</span></div></div><form className="register-form" onSubmit={onSubmit}><div className="form-head"><span>01 — আপনার পরিচয়</span><h2>Donor profile তৈরি করুন</h2></div><label>পুরো নাম<input required value={registration.name} onChange={(event) => updateRegistration('name', event.target.value)} placeholder="যেমন: আরিফ হোসেন" /></label><div className="form-row"><label>Blood group<select value={registration.blood} onChange={(event) => updateRegistration('blood', event.target.value)}>{bloodGroups.slice(1).map((group) => <option key={group}>{group}</option>)}</select></label><label>মোবাইল নম্বর<input required value={registration.phone} onChange={(event) => updateRegistration('phone', event.target.value)} placeholder="01XXXXXXXXX" /></label></div><div className="form-row"><label>বয়স<input type="number" min="1" max="120" required value={registration.age} onChange={(event) => updateRegistration('age', event.target.value)} placeholder="১৮+" /></label><label>শেষবার রক্ত দিয়েছেন<input type="date" value={registration.lastDonation} onChange={(event) => updateRegistration('lastDonation', event.target.value)} /></label></div><div className="form-row"><label>জেলা<select value={registration.district} onChange={(event) => updateRegistration('district', event.target.value)}>{districts.map((item) => <option key={item}>{item}</option>)}</select></label><label>এলাকা<input required value={registration.area} onChange={(event) => updateRegistration('area', event.target.value)} placeholder="যেমন: ধানমন্ডি" /></label></div><label>কখন available থাকেন?<select value={registration.availability} onChange={(event) => updateRegistration('availability', event.target.value)}><option>যেকোনো সময়</option><option>সকাল ৮টা - দুপুর ১২টা</option><option>দুপুর ১২টা - বিকেল ৫টা</option><option>সন্ধ্যা ৬টা - রাত ১০টা</option></select></label><label>আপনার সম্পর্কে ছোট্ট note<textarea value={registration.note} onChange={(event) => updateRegistration('note', event.target.value)} placeholder="কেন donor হতে চান?" /></label><label>Profile picture <span className="optional">(ঐচ্ছিক)</span><input type="file" accept="image/*" onChange={onImageChange} /></label>{registration.image && <img className="profile-preview" src={registration.image} alt="Profile preview" />}<button className="primary-btn submit-btn" type="submit">আমার profile যুক্ত করুন <span>→</span></button><p className="privacy-note">ছবি আপনার device থেকেই নেওয়া হবে।</p></form></main>; }
+
+function StockPanel({ onRequest }) {
+  const total = Object.values(stockData).reduce((sum, units) => sum + units, 0);
+  return <main className="system-page"><div className="system-heading"><div><p className="overline">BloodBankManager · BloodStock</p><h1>Blood stock overview</h1><p>Java system-এর current inventory snapshot। Stock কম থাকলে emergency donor request পাঠান।</p></div><button className="primary-btn" onClick={onRequest}>রক্তের অনুরোধ করুন <span>→</span></button></div><div className="stock-total"><strong>{total}</strong><span>মোট blood units available</span></div><div className="stock-grid">{Object.entries(stockData).map(([group, units]) => <div className={`stock-card ${units <= 2 ? 'stock-low' : ''}`} key={group}><span className="blood-badge">{group}</span><strong>{units}</strong><small>{units <= 2 ? 'Low stock' : 'units available'}</small></div>)}</div><div className="java-note"><strong>Java logic:</strong> BloodStock.removeUnits() পর্যাপ্ত stock না থাকলে false দেয়; তখন BloodRequest তৈরি করে eligible donor খোঁজা হয়।</div></main>;
+}
+
+function RequestForm({ request, updateRequest, onSubmit, onBack }) {
+  return <main className="system-page request-page"><button className="back-btn" onClick={onBack}>← donor directory-তে ফিরে যান</button><div className="system-heading"><div><p className="overline">Customer · BloodRequest</p><h1>Emergency blood request</h1><p>Stock-এ প্রয়োজনীয় blood না থাকলে আপনার location-এর eligible donor-দের কাছে request যাবে।</p></div></div><form className="request-form" onSubmit={onSubmit}><label>আপনার নাম<input required value={request.name} onChange={(event) => updateRequest('name', event.target.value)} placeholder="যিনি request করছেন" /></label><label>Patient-এর নাম<input required value={request.patient} onChange={(event) => updateRequest('patient', event.target.value)} placeholder="রোগীর নাম" /></label><div className="form-row"><label>Blood group<select value={request.blood} onChange={(event) => updateRequest('blood', event.target.value)}>{bloodGroups.slice(1).map((group) => <option key={group}>{group}</option>)}</select></label><label>কত bag প্রয়োজন?<input type="number" min="1" max="10" required value={request.bags} onChange={(event) => updateRequest('bags', event.target.value)} /></label></div><div className="form-row"><label>কোথায় প্রয়োজন?<input required value={request.location} onChange={(event) => updateRequest('location', event.target.value)} placeholder="হাসপাতাল / এলাকা" /></label><label>মোবাইল নম্বর<input required value={request.phone} onChange={(event) => updateRequest('phone', event.target.value)} placeholder="01XXXXXXXXX" /></label></div><button className="primary-btn submit-btn" type="submit">Emergency request পাঠান <span>→</span></button></form></main>;
 }
 
 export default App;
