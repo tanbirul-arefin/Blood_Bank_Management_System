@@ -48,12 +48,15 @@ h1 em, h2 em { color: #dc4c45; font-style: normal; }
 .section-intro { display: flex; justify-content: space-between; align-items: end; margin-bottom: 34px; }
 .section-intro h2, .impact-section h2 { margin: 0; color: #2f2926; font-size: clamp(2.2rem, 4vw, 3.8rem); line-height: 1.12; }
 .section-intro > p { color: #897e77; font-size: .86rem; line-height: 1.65; text-align: right; }
-.filter-bar { display: grid; grid-template-columns: 1fr 1fr 150px 160px; gap: 10px; padding: 10px; border: 1px solid #e6dfd7; background: #fffdfa; }
+.filter-bar { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 10px; padding: 10px; border: 1px solid #e6dfd7; background: #fffdfa; }
 .search-box { display: flex; align-items: center; gap: 10px; padding: 0 15px; border: 1px solid #eee8e1; background: #fff; }
 .search-box span { color: #d34c44; font-size: 1.7rem; line-height: 0; transform: rotate(-20deg); }
 .filter-bar input, .filter-bar select, .register-form input, .register-form select, .register-form textarea { width: 100%; border: 0; outline: 0; color: #3b3531; background: transparent; font-size: .83rem; }
 .filter-bar select { padding: 13px; border-left: 1px solid #eee8e1; background: #fff; }
 .district-search { border-color: #ead5cf; }
+.filter-bar .district-search { order: 1; }
+.filter-bar > select:nth-of-type(1) { order: 2; }
+.filter-bar .search-box:not(.district-search), .filter-bar > select:nth-of-type(2) { display: none; }
 .result-line { display: flex; justify-content: space-between; margin: 21px 0 15px; color: #9b918a; font-size: .75rem; }
 .result-line strong { color: #322b28; }
 .available-key { color: #6f6862; }

@@ -2,14 +2,16 @@ import { useMemo, useState } from 'react';
 
 const bloodGroups = ['সব গ্রুপ', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 const districts = ['ঢাকা', 'চট্টগ্রাম', 'সিলেট', 'রাজশাহী', 'খুলনা', 'ময়মনসিংহ', 'রংপুর', 'বরিশাল', 'কুমিল্লা', 'জয়পুরহাট'];
+const districtEnglish = { 'ঢাকা': 'Dhaka', 'চট্টগ্রাম': 'Chittagong', 'সিলেট': 'Sylhet', 'রাজশাহী': 'Rajshahi', 'খুলনা': 'Khulna', 'ময়মনসিংহ': 'Mymensingh', 'রংপুর': 'Rangpur', 'বরিশাল': 'Barisal', 'কুমিল্লা': 'Cumilla', 'জয়পুরহাট': 'Joypurhat' };
+const districtAliases = { dhaka: 'ঢাকা', chittagong: 'চট্টগ্রাম', chattogram: 'চট্টগ্রাম', sylhet: 'সিলেট', rajshahi: 'রাজশাহী', khulna: 'খুলনা', mymensingh: 'ময়মনসিংহ', rangpur: 'রংপুর', barisal: 'বরিশাল', barishal: 'বরিশাল', cumilla: 'কুমিল্লা', comilla: 'কুমিল্লা', joypurhat: 'জয়পুরহাট' };
 const stockData = { 'A+': 8, 'A-': 3, 'B+': 6, 'B-': 2, 'AB+': 4, 'AB-': 1, 'O+': 10, 'O-': 2 };
 const starterDonors = [
-  { id: 1, name: 'নাদিয়া রহমান', blood: 'A+', district: 'সিলেট', area: 'জিন্দাবাজার', phone: '01712-345678', availability: 'সকাল ৮টা - দুপুর ১২টা', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80', note: 'জরুরি প্রয়োজনে পাশে থাকতে চাই।', rating: 5, reviews: 18, verified: true },
-  { id: 2, name: 'সাজিদ হোসেন', blood: 'A+', district: 'ঢাকা', area: 'ধানমন্ডি', phone: '01812-345678', availability: 'সন্ধ্যা ৬টা - রাত ৯টা', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80', note: 'রক্ত দেওয়া আমার নিয়মিত মানবিক কাজ।', rating: 4.9, reviews: 12, verified: true },
-  { id: 3, name: 'ফারহানা আলী', blood: 'B+', district: 'চট্টগ্রাম', area: 'জিইসি মোড়', phone: '01912-345678', availability: 'এই সপ্তাহে যেকোনো সময়', image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80', note: 'প্রয়োজনে কল করুন, সম্ভব হলে অবশ্যই আসব।', rating: 5, reviews: 9, verified: true },
-  { id: 4, name: 'আরিফ হোসেন', blood: 'O-', district: 'রংপুর', area: 'সিটি গেট', phone: '01612-345678', availability: 'যেকোনো সময়', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80', note: 'O- জরুরি donor হিসেবে যুক্ত আছি।', rating: 4.8, reviews: 21, verified: true },
-  { id: 5, name: 'মিম আক্তার', blood: 'O+', district: 'সিলেট', area: 'আম্বরখানা', phone: '01512-345678', availability: 'সকাল ৯টা - দুপুর ১টা', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80', note: 'এক ব্যাগ রক্ত, একটি জীবন।', rating: 4.9, reviews: 15, verified: false },
-  { id: 6, name: 'তামিম রহমান', blood: 'B+', district: 'জয়পুরহাট', area: 'সদর', phone: '01711-241234', availability: 'সন্ধ্যা ৬টার পর', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80', note: 'রক্তের প্রয়োজন হলে জানাবেন।', rating: 4.7, reviews: 7, verified: true },
+  { id: 1, name: 'Nadia Rahman', nameBn: 'নাদিয়া রহমান', blood: 'A+', district: 'সিলেট', area: 'Zindabazar', areaBn: 'জিন্দাবাজার', phone: '01712-345678', availability: 'সকাল ৮টা - দুপুর ১২টা', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80', note: 'জরুরি প্রয়োজনে পাশে থাকতে চাই।', rating: 5, reviews: 18, verified: true },
+  { id: 2, name: 'Sajid Hossain', nameBn: 'সাজিদ হোসেন', blood: 'A+', district: 'ঢাকা', area: 'Dhanmondi', areaBn: 'ধানমন্ডি', phone: '01812-345678', availability: 'সন্ধ্যা ৬টা - রাত ৯টা', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80', note: 'রক্ত দেওয়া আমার নিয়মিত মানবিক কাজ।', rating: 4.9, reviews: 12, verified: true },
+  { id: 3, name: 'Farhana Ali', nameBn: 'ফারহানা আলী', blood: 'B+', district: 'চট্টগ্রাম', area: 'GEC Circle', areaBn: 'জিইসি মোড়', phone: '01912-345678', availability: 'এই সপ্তাহে যেকোনো সময়', image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80', note: 'প্রয়োজনে কল করুন, সম্ভব হলে অবশ্যই আসব।', rating: 5, reviews: 9, verified: true },
+  { id: 4, name: 'Arif Hossain', nameBn: 'আরিফ হোসেন', blood: 'O-', district: 'রংপুর', area: 'City Gate', areaBn: 'সিটি গেট', phone: '01612-345678', availability: 'যেকোনো সময়', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80', note: 'O- জরুরি donor হিসেবে যুক্ত আছি।', rating: 4.8, reviews: 21, verified: true },
+  { id: 5, name: 'Mim Akter', nameBn: 'মিম আক্তার', blood: 'O+', district: 'সিলেট', area: 'Amberkhana', areaBn: 'আম্বরখানা', phone: '01512-345678', availability: 'সকাল ৯টা - দুপুর ১টা', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80', note: 'এক ব্যাগ রক্ত, একটি জীবন।', rating: 4.9, reviews: 15, verified: false },
+  { id: 6, name: 'Tamim Rahman', nameBn: 'তামিম রহমান', blood: 'B+', district: 'জয়পুরহাট', area: 'Sadar', areaBn: 'সদর', phone: '01711-241234', availability: 'সন্ধ্যা ৬টার পর', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80', note: 'রক্তের প্রয়োজন হলে জানাবেন।', rating: 4.7, reviews: 7, verified: true },
 ];
 
 function App() {
@@ -25,10 +27,10 @@ function App() {
   const [request, setRequest] = useState({ name: '', patient: '', blood: 'A+', bags: 1, location: '', phone: '' });
 
   const filteredDonors = useMemo(() => donors.filter((donor) => {
-    const searchText = `${donor.name} ${donor.area}`.toLowerCase();
-    const districtText = donor.district.toLowerCase();
-    return (blood === 'সব গ্রুপ' || donor.blood === blood) && (district === 'সব এলাকা' || donor.district === district) && searchText.includes(query.toLowerCase()) && districtText.includes(districtQuery.toLowerCase());
-  }), [donors, query, districtQuery, blood, district]);
+    const districtText = `${donor.district} ${districtEnglish[donor.district] || ''}`.toLowerCase();
+    const typedDistrict = districtAliases[districtQuery.trim().toLowerCase()] || districtQuery.trim().toLowerCase();
+    return (blood === 'সব গ্রুপ' || donor.blood === blood) && districtText.includes(typedDistrict);
+  }), [donors, districtQuery, blood]);
 
   const handleImageChange = (event) => {
     const file = event.target.files?.[0];
@@ -48,7 +50,6 @@ function App() {
     setRegistration({ name: '', blood: 'A+', district: 'ঢাকা', area: '', phone: '', age: '', lastDonation: '', availability: 'যেকোনো সময়', image: '', note: '' });
     setNotice('আপনার donor profile সফলভাবে যুক্ত হয়েছে।');
     setActiveTab('find');
-    setQuery(donor.name);
   };
 
   const handleRequest = (event) => {
