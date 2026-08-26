@@ -43,6 +43,8 @@ h1 em, h2 em { color: #dc4c45; font-style: normal; }
 .trust-strip div:first-child { padding-left: 0; }
 .trust-strip div:last-child { border: 0; }
 .trust-strip strong { color: #f0645e; font-size: 1.45rem; }
+.trust-strip div:nth-child(3) strong { color: transparent; font-size: 0; }
+.trust-strip div:nth-child(3) strong::after { content: '৯৬৭+'; color: #f0645e; font-size: 1.45rem; }
 .trust-strip span { color: #b9afaa; font-size: .77rem; }
 .directory-section { max-width: 1150px; margin: auto; padding: 90px 30px 110px; }
 .section-intro { display: flex; justify-content: space-between; align-items: end; margin-bottom: 34px; }
