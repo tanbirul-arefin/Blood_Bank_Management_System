@@ -154,3 +154,47 @@ footer .brand-mark { width: 24px; height: 24px; font-size: 1.2rem; }
 .request-form input, .request-form select { width: 100%; padding: 12px 11px; border: 1px solid #e5dcd5; outline: 0; background: #fff; color: #3b3531; font-size: .83rem; }
 @media (max-width: 850px) { .topbar { padding: 0 20px; } nav { gap: 13px; } nav a { display: none; } .hero { grid-template-columns: 1fr; padding: 54px 30px 20px; } .hero-visual { min-height: 280px; } .trust-strip { padding: 18px 25px; } .trust-strip div { padding: 4px 12px; flex-direction: column; gap: 2px; } .donor-grid { grid-template-columns: repeat(2, 1fr); } .register-page { grid-template-columns: 1fr; gap: 10px; margin-top: 20px; } .back-btn { margin-bottom: 35px; } .stock-grid { grid-template-columns: repeat(2, 1fr); } .system-heading { align-items: flex-start; flex-direction: column; } }
 @media (max-width: 560px) { .topbar { height: 70px; } .brand small { display: none; } .emergency-btn { padding: 9px; font-size: 0; } .emergency-btn span { margin: 0; font-size: 1rem; } .hero { padding: 43px 22px 0; } h1 { font-size: 3.15rem; } .hero-visual { min-height: 255px; } .blood-drop { right: 80px; width: 125px; height: 165px; font-size: 3rem; } .hero-visual:before { width: 240px; height: 240px; right: 10px; } .hero-note { right: 0; font-size: 1rem; } .hero-stat { right: 0; } .trust-strip { grid-template-columns: repeat(2, 1fr); gap: 15px; } .trust-strip div:nth-child(2) { border: 0; } .directory-section { padding: 60px 18px 75px; } .section-intro { display: block; } .section-intro > p { margin-top: 14px; text-align: left; } .filter-bar { grid-template-columns: 1fr; } .filter-bar select { border-left: 0; border-top: 1px solid #eee8e1; } .donor-grid { grid-template-columns: 1fr; } .impact-section { grid-template-columns: 1fr; gap: 25px; padding: 55px 22px; } footer { flex-wrap: wrap; gap: 15px; padding: 24px 20px; } .modal { padding: 22px; } .review-fields { flex-direction: column; } .register-page { padding: 0 18px; } .register-form { padding: 22px; } .form-row { grid-template-columns: 1fr; gap: 0; } .system-page { margin-top: 25px; padding: 0 18px; } .system-heading { padding: 25px 20px; } .stock-grid { grid-template-columns: 1fr 1fr; } .request-form { grid-template-columns: 1fr; padding: 22px; } .request-form > label, .request-form .form-row, .request-form .submit-btn { grid-column: 1; } }
+
+/* Owner Actions in Profile Modal */
+.modal-top-actions {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.modal-top-actions .action-btn {
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+.modal-top-actions .edit-btn {
+  color: #4f46e5;
+}
+.modal-top-actions .edit-btn:hover {
+  background: #eef2ff;
+  color: #312e81;
+  transform: scale(1.08);
+}
+.modal-top-actions .delete-btn {
+  color: #e34841;
+}
+.modal-top-actions .delete-btn:hover {
+  background: #fdf2f2;
+  color: #b91c1c;
+  transform: scale(1.08);
+}
+.register-form-modal {
+  animation: modalFadeIn 0.3s ease-out;
+}
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
