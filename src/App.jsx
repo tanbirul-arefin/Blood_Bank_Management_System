@@ -6,16 +6,26 @@ const districtEnglish = { 'ঢাকা': 'Dhaka', 'চট্টগ্রাম'
 const districtAliases = { dhaka: 'ঢাকা', chittagong: 'চট্টগ্রাম', chattogram: 'চট্টগ্রাম', sylhet: 'সিলেট', rajshahi: 'রাজশাহী', khulna: 'খুলনা', mymensingh: 'ময়মনসিংহ', rangpur: 'রংপুর', barisal: 'বরিশাল', barishal: 'বরিশাল', cumilla: 'কুমিল্লা', comilla: 'কুমিল্লা', joypurhat: 'জয়পুরহাট' };
 const stockData = { 'A+': 8, 'A-': 3, 'B+': 6, 'B-': 2, 'AB+': 4, 'AB-': 1, 'O+': 10, 'O-': 2 };
 const starterDonors = [
-  { id: 1, name: 'Nadia Rahman', nameBn: 'নাদিয়া রহমান', blood: 'A+', district: 'সিলেট', area: 'Zindabazar', areaBn: 'জিন্দাবাজার', phone: '01712-345678', availability: 'সকাল ৮টা - দুপুর ১২টা', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80', note: 'জরুরি প্রয়োজনে পাশে আছি।', rating: 5, reviews: 18, verified: true },
-  { id: 2, name: 'Sajid Hossain', nameBn: 'সাজিদ হোসেন', blood: 'A+', district: 'ঢাকা', area: 'Dhanmondi', areaBn: 'ধানমন্ডি', phone: '01812-345678', availability: 'সন্ধ্যা ৬টা - রাত ৯টা', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80', note: 'রক্ত দিতে নিয়মিত প্রস্তুত আছি।', rating: 4.9, reviews: 12, verified: true },
-  { id: 3, name: 'Farhana Ali', nameBn: 'ফারহানা আলী', blood: 'B+', district: 'চট্টগ্রাম', area: 'GEC Circle', areaBn: 'জিইসি মোড়', phone: '01912-345678', availability: 'এই সপ্তাহে যেকোনো সময়', image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80', note: 'প্রয়োজন হলে দ্রুত যোগাযোগ করুন।', rating: 5, reviews: 9, verified: true },
-  { id: 4, name: 'Arif Hossain', nameBn: 'আরিফ হোসেন', blood: 'O-', district: 'রংপুর', area: 'City Gate', areaBn: 'সিটি গেট', phone: '01612-345678', availability: 'যেকোনো সময়', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80', note: 'জরুরি donor হিসেবে যুক্ত আছি।', rating: 4.8, reviews: 21, verified: true },
-  { id: 5, name: 'Mim Akter', nameBn: 'মিম আক্তার', blood: 'O+', district: 'সিলেট', area: 'Amberkhana', areaBn: 'আম্বরখানা', phone: '01512-345678', availability: 'সকাল ৯টা - দুপুর ১টা', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80', note: 'রক্তের জন্য আমাকে জানাতে পারেন।', rating: 4.9, reviews: 15, verified: false },
-  { id: 6, name: 'Tamim Rahman', nameBn: 'তামিম রহমান', blood: 'B+', district: 'জয়পুরহাট', area: 'Sadar', areaBn: 'সদর', phone: '01711-241234', availability: 'সন্ধ্যা ৬টার পর', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80', note: 'সদা মানুষের পাশে আছি।', rating: 4.7, reviews: 7, verified: true },
+  { id: 1, name: 'Nadia Rahman', nameBn: 'নাদিয়া রহমান', blood: 'A+', district: 'সিলেট', area: 'Zindabazar', areaBn: 'জিন্দাবাজার', phone: '01712-345678', availability: 'সকাল ৮টা - দুপুর ১২টা', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80', note: 'জরুরি প্রয়োজনে পাশে আছি।', rating: 5, reviews: 18, verified: true, password: '1234' },
+  { id: 2, name: 'Sajid Hossain', nameBn: 'সাজিদ হোসেন', blood: 'A+', district: 'ঢাকা', area: 'Dhanmondi', areaBn: 'ধানমন্ডি', phone: '01812-345678', availability: 'সন্ধ্যা ৬টা - রাত ৯টা', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80', note: 'রক্ত দিতে নিয়মিত প্রস্তুত আছি।', rating: 4.9, reviews: 12, verified: true, password: '1234' },
+  { id: 3, name: 'Farhana Ali', nameBn: 'ফারহানা আলী', blood: 'B+', district: 'চট্টগ্রাম', area: 'GEC Circle', areaBn: 'জিইসি মোড়', phone: '01912-345678', availability: 'এই সপ্তাহে যেকোনো সময়', image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80', note: 'প্রয়োজন হলে দ্রুত যোগাযোগ করুন।', rating: 5, reviews: 9, verified: true, password: '1234' },
+  { id: 4, name: 'Arif Hossain', nameBn: 'আরিফ হোসেন', blood: 'O-', district: 'রংপুর', area: 'City Gate', areaBn: 'সিটি গেট', phone: '01612-345678', availability: 'যেকোনো সময়', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80', note: 'জরুরি donor হিসেবে যুক্ত আছি।', rating: 4.8, reviews: 21, verified: true, password: '1234' },
+  { id: 5, name: 'Mim Akter', nameBn: 'মিম আক্তার', blood: 'O+', district: 'সিলেট', area: 'Amberkhana', areaBn: 'আম্বরখানা', phone: '01512-345678', availability: 'সকাল ৯টা - দুপুর ১টা', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80', note: 'রক্তের জন্য আমাকে জানাতে পারেন।', rating: 4.9, reviews: 15, verified: false, password: '1234' },
+  { id: 6, name: 'Tamim Rahman', nameBn: 'তামিম রহমান', blood: 'B+', district: 'জয়পুরহাট', area: 'Sadar', areaBn: 'সদর', phone: '01711-241234', availability: 'সন্ধ্যা ৬টার পর', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80', note: 'সদা মানুষের পাশে আছি।', rating: 4.7, reviews: 7, verified: true, password: '1234' },
 ];
 
 function App() {
   const [donors, setDonors] = useState(starterDonors);
+  const [currentUser, setCurrentUser] = useState(() => {
+    const saved = localStorage.getItem('currentUser');
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  // Login form state
+  const [loginPhone, setLoginPhone] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+
   const [query, setQuery] = useState('');
   const [districtQuery, setDistrictQuery] = useState('');
   const [blood, setBlood] = useState('সব গ্রুপ');
@@ -24,7 +34,8 @@ function App() {
   const [selectedDonor, setSelectedDonor] = useState(null);
   const [editingDonor, setEditingDonor] = useState(null);
   const [notice, setNotice] = useState('');
-  const [registration, setRegistration] = useState({ name: '', blood: 'A+', district: 'ঢাকা', area: '', phone: '', age: '', lastDonation: '', availability: 'যেকোনো সময়', status: 'Available', image: '', note: '' });
+  
+  const [registration, setRegistration] = useState({ name: '', blood: 'A+', district: 'ঢাকা', area: '', phone: '', age: '', lastDonation: '', availability: 'যেকোনো সময়', status: 'Available', image: '', note: '', password: '' });
   const [request, setRequest] = useState({ name: '', patient: '', blood: 'A+', bags: 1, location: '', phone: '' });
 
   const filteredDonors = useMemo(() => donors.filter((donor) => {
@@ -49,6 +60,29 @@ function App() {
     reader.readAsDataURL(file);
   };
 
+  const handleLogin = (event) => {
+    event.preventDefault();
+    const cleanLoginPhone = loginPhone.replace(/\D/g, '');
+    const user = donors.find((d) => d.phone.replace(/\D/g, '') === cleanLoginPhone && d.password === loginPassword);
+    
+    if (user) {
+      setCurrentUser(user);
+      localStorage.setItem('currentUser', JSON.stringify(user));
+      setLoginError('');
+      setLoginPhone('');
+      setLoginPassword('');
+      setActiveTab('find');
+    } else {
+      setLoginError('মোবাইল নম্বর বা পাসওয়ার্ড ভুল হয়েছে।');
+    }
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    localStorage.removeItem('currentUser');
+    setActiveTab('find');
+  };
+
   const handleRegistration = (event) => {
     event.preventDefault();
     const newId = donors.length ? Math.max(...donors.map((d) => d.id)) + 1 : 1;
@@ -61,11 +95,20 @@ function App() {
       nameBn: registration.name,
       areaBn: registration.area
     };
+    
     setDonors((current) => [...current, newDonor]);
-    localStorage.setItem('myDonorPhone', registration.phone.replace(/\D/g, ''));
+    
+    // Auto login if not already logged in
+    if (!currentUser) {
+      setCurrentUser(newDonor);
+      localStorage.setItem('currentUser', JSON.stringify(newDonor));
+      setNotice('আপনার donor profile সফলভাবে তৈরি হয়েছে এবং আপনি লগ-ইন আছেন।');
+    } else {
+      setNotice('নতুন donor profile সফলভাবে যুক্ত হয়েছে।');
+    }
+
     setActiveTab('find');
-    setNotice('আপনার profile যুক্ত হয়েছে। ধন্যবাদ।');
-    setRegistration({ name: '', blood: 'A+', district: 'ঢাকা', area: '', phone: '', age: '', lastDonation: '', availability: 'যেকোনো সময়', status: 'Available', image: '', note: '' });
+    setRegistration({ name: '', blood: 'A+', district: 'ঢাকা', area: '', phone: '', age: '', lastDonation: '', availability: 'যেকোনো সময়', status: 'Available', image: '', note: '', password: '' });
   };
 
   const handleRequest = (event) => {
@@ -85,7 +128,10 @@ function App() {
 
   const handleSaveEdit = (updatedDonor) => {
     setDonors((current) => current.map((donor) => donor.id === updatedDonor.id ? updatedDonor : donor));
-    localStorage.setItem('myDonorPhone', updatedDonor.phone.replace(/\D/g, ''));
+    if (currentUser && currentUser.id === updatedDonor.id) {
+      setCurrentUser(updatedDonor);
+      localStorage.setItem('currentUser', JSON.stringify(updatedDonor));
+    }
     setEditingDonor(null);
     setNotice('আপনার প্রোফাইল তথ্য সফলভাবে আপডেট করা হয়েছে।');
   };
@@ -95,14 +141,92 @@ function App() {
     const name = donor ? (donor.nameBn || donor.name) : 'ডোনার';
     setDonors((current) => current.filter((d) => d.id !== id));
     setSelectedDonor(null);
-    localStorage.removeItem('myDonorPhone');
+    
+    if (currentUser && currentUser.id === id) {
+      handleLogout();
+    }
     setNotice(`${name} এর ডোনার প্রোফাইল সফলভাবে ডিলিট করা হয়েছে। কারণ: ${reason}`);
   };
 
+  if (!currentUser && activeTab !== 'register') {
+    return (
+      <div className="app-shell" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifycontent: 'space-between' }}>
+        <header className="topbar">
+          <a className="brand" href="#top">
+            <span className="brand-mark">+</span>
+            <span>রক্তবন্ধু<small>BloodBond Bangladesh</small></span>
+          </a>
+        </header>
+
+        <main className="register-page" style={{ display: 'grid', gridTemplateColumns: '1fr', placeItems: 'center', padding: '40px 20px' }}>
+          <form className="register-form" onSubmit={handleLogin} style={{ width: 'min(450px, 100%)', margin: '0 auto', boxShadow: '0 10px 30px rgba(32, 16, 12, 0.08)', borderRadius: '8px' }}>
+            <div className="form-head" style={{ textAlign: 'center', marginBottom: '25px' }}>
+              <span style={{ color: '#d94740', fontWeight: 'bold', fontSize: '0.9rem' }}>স্বাগতম</span>
+              <h2 style={{ fontSize: '1.8rem', margin: '5px 0 0', color: '#3e3530' }}>রক্তবন্ধু একাউন্টে লগইন করুন</h2>
+            </div>
+            
+            {loginError && (
+              <div className="error-message" style={{ background: '#fdf2f2', border: '1px solid #f8b4b4', color: '#b91c1c', padding: '12px', borderRadius: '6px', marginBottom: '20px', fontSize: '0.85rem', fontWeight: 'bold', textAlign: 'center' }}>
+                {loginError}
+              </div>
+            )}
+            {notice && (
+              <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', color: '#166534', padding: '12px', borderRadius: '6px', marginBottom: '20px', fontSize: '0.85rem', fontWeight: 'bold', textAlign: 'center' }}>
+                {notice}
+              </div>
+            )}
+
+            <label style={{ display: 'block', marginBottom: '15px' }}>মোবাইল নম্বর
+              <input type="text" value={loginPhone} onChange={(e) => setLoginPhone(e.target.value)} required placeholder="যেমন: 01712345678" style={{ width: '100%', padding: '12px', border: '1px solid #e5dcd5', borderRadius: '6px', marginTop: '5px', outline: 'none', fontSize: '0.9rem', boxSizing: 'border-box' }} />
+            </label>
+            <label style={{ display: 'block', marginBottom: '25px' }}>পাসওয়ার্ড
+              <input type="password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required placeholder="আপনার পাসওয়ার্ড লিখুন" style={{ width: '100%', padding: '12px', border: '1px solid #e5dcd5', borderRadius: '6px', marginTop: '5px', outline: 'none', fontSize: '0.9rem', boxSizing: 'border-box' }} />
+            </label>
+            
+            <button className="primary-btn submit-btn" type="submit" style={{ width: '100%', padding: '14px', fontWeight: 'bold', fontSize: '1rem', borderRadius: '6px', border: 0, background: '#e34841', color: 'white', cursor: 'pointer' }}>লগইন করুন <span>→</span></button>
+            
+            <div style={{ textAlign: 'center', marginTop: '25px', fontSize: '0.85rem', color: '#766a62' }}>
+              নতুন ডোনার? 
+              <button type="button" onClick={() => { setNotice(''); setActiveTab('register'); }} style={{ color: '#e34841', fontWeight: 'bold', textDecoration: 'none', marginLeft: '5px', background: 'transparent', border: 0, cursor: 'pointer' }}>ডোনার হিসেবে রেজিস্ট্রেশন করুন</button>
+            </div>
+          </form>
+        </main>
+        
+        <footer style={{ padding: '24px 20px', borderTop: '1px solid #eee5dd', display: 'flex', justifyContent: 'space-between', color: '#92877e', fontSize: '0.8rem' }}>
+          <span className="brand"><span className="brand-mark">+</span> রক্তবন্ধু</span>
+          <span>মানুষ মানুষের জন্য।</span>
+          <span>© ২০২৪ BloodBond Bangladesh</span>
+        </footer>
+      </div>
+    );
+  }
+
   return (
     <div className="app-shell">
-      <header className="topbar"><a className="brand" href="#top" onClick={() => setActiveTab('find')}><span className="brand-mark">+</span><span>রক্তবন্ধু<small>BloodBond Bangladesh</small></span></a><nav><button className={activeTab === 'find' ? 'nav-active' : ''} onClick={() => setActiveTab('find')}>ডোনার খুঁজুন</button><button className={activeTab === 'register' ? 'nav-active' : ''} onClick={() => setActiveTab('register')}>ডোনার হোন</button><button className={activeTab === 'request' ? 'nav-active' : ''} onClick={() => setActiveTab('request')}>রক্তের অনুরোধ</button></nav><button className="emergency-btn" onClick={() => { setNotice(''); setActiveTab('request'); }}>জরুরি সহায়তা <span>↗</span></button></header>
-      {activeTab === 'find' ? <main id="top"><section className="hero"><div className="hero-content"><p className="overline">বাংলাদেশের trusted blood donor network</p><h1>আজ আপনার রক্তে<br /><em>বাঁচুক একটি জীবন।</em></h1><p className="hero-subtitle">আপনার কাছাকাছি verified donor খুঁজুন। রক্তের গ্রুপ, এলাকা এবং availability অনুযায়ী সহজেই যোগাযোগ করুন।</p><div className="hero-actions"><button className="primary-btn" onClick={() => document.getElementById('directory').scrollIntoView({ behavior: 'smooth' })}>ডোনার খুঁজুন <span>↓</span></button><button className="text-btn" onClick={() => setActiveTab('register')}>আমি donor হতে চাই <span>→</span></button></div></div><div className="hero-visual"><div className="blood-drop">+</div><div className="hero-stat"><strong>{donors.length + 1247}</strong><span>registered donors</span></div><div className="hero-note">“একটি ছোট্ট সাহায্য<br />কারও পুরো পৃথিবী।”</div></div></section><section className="trust-strip"><div><strong>২৪/৭</strong><span>জরুরি সাপোর্ট</span></div><div><strong>৬৪</strong><span>জেলায় donor</span></div><div><strong>১,২৫৩+</strong><span>সক্রিয় সদস্য</span></div><div><strong>১০০%</strong><span>মানবিক উদ্যোগ</span></div></section><section className="directory-section" id="directory"><div className="section-intro"><div><p className="overline">আপনার প্রয়োজনের মানুষটি</p><h2>Donor directory</h2></div><p>রক্তের গ্রুপ ও এলাকা বেছে নিয়ে<br />কাছাকাছি donor খুঁজে নিন।</p></div><div className="filter-bar"><div className="search-box"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="নাম বা এলাকার নাম লিখুন..." /></div><div className="search-box district-search"><span>⌖</span><input value={districtQuery} onChange={(event) => setDistrictQuery(event.target.value)} placeholder="জেলা লিখে search করুন..." /></div><select value={blood} onChange={(event) => setBlood(event.target.value)}>{bloodGroups.map((group) => <option key={group}>{group}</option>)}</select><select value={district} onChange={(event) => setDistrict(event.target.value)}><option>সব এলাকা</option>{districts.map((item) => <option key={item}>{item}</option>)}</select></div><div className="result-line"><span><strong>{filteredDonors.length}</strong> জন donor পাওয়া গেছে</span><span className="available-key"><i /> এখন available</span></div><div className="donor-grid">{filteredDonors.map((donor) => <DonorCard key={donor.id} donor={donor} onOpen={() => setSelectedDonor(donor)} />)}</div>{filteredDonors.length === 0 && <div className="empty">এই filter-এ কোনো donor পাওয়া যায়নি। অন্য এলাকা বা blood group চেষ্টা করুন।</div>}</section><section className="impact-section" id="how-it-works"><div><p className="overline">একসাথে আমরা পারি</p><h2>রক্তের সম্পর্ক<br /><em>মানবতার সম্পর্ক।</em></h2></div><div className="impact-copy"><p>রক্তবন্ধু এমন একটি community যেখানে donor ও receiver সরাসরি একে অপরের কাছে পৌঁছাতে পারে। আপনার এক ব্যাগ রক্ত কারও পরিবারের জন্য নতুন আশার শুরু হতে পারে।</p><button className="text-btn" onClick={() => setActiveTab('register')}>community-তে যোগ দিন <span>→</span></button></div></section></main> : activeTab === 'register' ? <RegisterForm registration={registration} updateRegistration={updateRegistration} onImageChange={handleImageChange} onSubmit={handleRegistration} onBack={() => setActiveTab('find')} /> : activeTab === 'stock' ? <StockPanel onRequest={() => setActiveTab('request')} /> : <RequestForm request={request} updateRequest={(field, value) => setRequest((current) => ({ ...current, [field]: value }))} onSubmit={handleRequest} onBack={() => setActiveTab('find')} />}
+      <header className="topbar">
+        <a className="brand" href="#top" onClick={() => setActiveTab('find')}>
+          <span className="brand-mark">+</span>
+          <span>রক্তবন্ধু<small>BloodBond Bangladesh</small></span>
+        </a>
+        <nav>
+          <button className={activeTab === 'find' ? 'nav-active' : ''} onClick={() => setActiveTab('find')}>ডোনার খুঁজুন</button>
+          <button className={activeTab === 'register' ? 'nav-active' : ''} onClick={() => setActiveTab('register')}>ডোনার হোন</button>
+          <button className={activeTab === 'request' ? 'nav-active' : ''} onClick={() => setActiveTab('request')}>রক্তের অনুরোধ</button>
+        </nav>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          {currentUser && (
+            <>
+              <span style={{ fontSize: '0.82rem', color: '#766a62', fontWeight: 'bold', background: '#fdf2f2', padding: '6px 12px', borderRadius: '20px', display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }} onClick={() => { const fullUser = donors.find(d => d.id === currentUser.id); if (fullUser) setSelectedDonor(fullUser); }}>
+                👤 {currentUser.name}
+              </span>
+              <button onClick={handleLogout} style={{ color: '#766a62', fontSize: '0.8rem', fontWeight: 'bold', padding: '6px 12px', border: '1px solid #eee5dd', borderRadius: '4px', background: 'transparent', cursor: 'pointer' }}>লগআউট</button>
+            </>
+          )}
+          <button className="emergency-btn" onClick={() => { setNotice(''); setActiveTab('request'); }}>জরুরি সহায়তা <span>↗</span></button>
+        </div>
+      </header>
+      
+      {activeTab === 'find' ? <main id="top"><section className="hero"><div className="hero-content"><p className="overline">বাংলাদেশের trusted blood donor network</p><h1>আজ আপনার রক্তে<br /><em>বাঁচুক একটি জীবন।</em></h1><p className="hero-subtitle">আপনার কাছাকাছি verified donor খুঁজুন। রক্তের গ্রুপ, এলাকা এবং availability অনুযায়ী সহজেই যোগাযোগ করুন।</p><div className="hero-actions"><button className="primary-btn" onClick={() => document.getElementById('directory').scrollIntoView({ behavior: 'smooth' })}>ডোনার খুঁজুন <span>↓</span></button><button className="text-btn" onClick={() => setActiveTab('register')}>আমি donor হতে চাই <span>→</span></button></div></div><div className="hero-visual"><div className="blood-drop">+</div><div className="hero-stat"><strong>{donors.length + 1247}</strong><span>registered donors</span></div><div className="hero-note">“একটি ছোট্ট সাহায্য<br />কারও পুরো পৃথিবী।”</div></div></section><section className="trust-strip"><div><strong>২৪/৭</strong><span>জরুরি সাপোর্ট</span></div><div><strong>৬৪</strong><span>জেলায় donor</span></div><div><strong>১,২৫৩+</strong><span>সক্রিয় সদস্য</span></div><div><strong>১০০%</strong><span>মানবিক উদ্যোগ</span></div></section><section className="directory-section" id="directory"><div className="section-intro"><div><p className="overline">আপনার প্রয়োজনের মানুষটি</p><h2>Donor directory</h2></div><p>রক্তের গ্রুপ ও এলাকা বেছে নিয়ে<br />কাছাকাছি donor খুঁজে নিন।</p></div><div className="filter-bar"><div className="search-box"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="নাম বা এলাকার নাম লিখুন..." /></div><div className="search-box district-search"><span>⌖</span><input value={districtQuery} onChange={(event) => setDistrictQuery(event.target.value)} placeholder="জেলা লিখে search করুন..." /></div><select value={blood} onChange={(event) => setBlood(event.target.value)}>{bloodGroups.map((group) => <option key={group}>{group}</option>)}</select><select value={district} onChange={(event) => setDistrict(event.target.value)}><option>সব এলাকা</option>{districts.map((item) => <option key={item}>{item}</option>)}</select></div><div className="result-line"><span><strong>{filteredDonors.length}</strong> জন donor পাওয়া গেছে</span><span className="available-key"><i /> এখন available</span></div><div className="donor-grid">{filteredDonors.map((donor) => <DonorCard key={donor.id} donor={donor} onOpen={() => setSelectedDonor(donor)} />)}</div>{filteredDonors.length === 0 && <div className="empty">এই filter-এ কোনো donor পাওয়া যায়নি। অন্য এলাকা বা blood group চেষ্টা করুন।</div>}</section><section className="impact-section" id="how-it-works"><div><p className="overline">একসাথে আমরা পারি</p><h2>রক্তের সম্পর্ক<br /><em>মানবতার সম্পর্ক।</em></h2></div><div className="impact-copy"><p>রক্তবন্ধু এমন একটি community যেখানে donor ও receiver সরাসরি একে অপরের কাছে পৌঁছাতে পারে। আপনার এক ব্যাগ রক্ত কারও পরিবারের জন্য নতুন আশার শুরু হতে পারে।</p><button className="text-btn" onClick={() => setActiveTab('register')}>community-তে যোগ দিন <span>→</span></button></div></section></main> : activeTab === 'register' ? <RegisterForm registration={registration} updateRegistration={updateRegistration} onImageChange={handleImageChange} onSubmit={handleRegistration} onBack={() => { if (currentUser) { setActiveTab('find'); } else { setActiveTab('login'); } }} /> : activeTab === 'stock' ? <StockPanel onRequest={() => setActiveTab('request')} /> : <RequestForm request={request} updateRequest={(field, value) => setRequest((current) => ({ ...current, [field]: value }))} onSubmit={handleRequest} onBack={() => setActiveTab('find')} />}
       <footer><span className="brand"><span className="brand-mark">+</span> রক্তবন্ধু</span><span>মানুষ মানুষের জন্য।</span><span>© ২০২৪ BloodBond Bangladesh</span></footer>
       {notice && <button className="notice" onClick={() => setNotice('')}>{notice} <span>×</span></button>}
       {selectedDonor && (
@@ -110,6 +234,7 @@ function App() {
           donor={selectedDonor}
           onClose={() => setSelectedDonor(null)}
           onReview={handleReview}
+          currentUser={currentUser}
           onEditClick={() => {
             setEditingDonor(selectedDonor);
             setSelectedDonor(null);
@@ -158,14 +283,12 @@ function DonorCard({ donor, onOpen }) {
   );
 }
 
-function DonorModal({ donor, onClose, onReview, onEditClick, onDeleteClick }) {
+function DonorModal({ donor, onClose, onReview, currentUser, onEditClick, onDeleteClick }) {
   const eligible = !donor.age || (donor.age >= 18 && (!donor.lastDonation || (Date.now() - new Date(donor.lastDonation).getTime()) >= 90 * 24 * 60 * 60 * 1000));
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteReason, setDeleteReason] = useState('কেন চলে যেতে চাচ্ছেন আমাদের ছেড়ে আমাদের কে একটু উপকার করলে কি এমন হতো');
 
-  const myPhone = localStorage.getItem('myDonorPhone') || '';
-  const normalize = (p) => p ? p.replace(/\D/g, '') : '';
-  const isOwner = normalize(myPhone) === normalize(donor.phone);
+  const isOwner = currentUser && currentUser.id === donor.id;
 
   const handleDeleteSubmit = (e) => {
     e.preventDefault();
@@ -233,7 +356,7 @@ function DonorModal({ donor, onClose, onReview, onEditClick, onDeleteClick }) {
           <div className="modal" style={{ borderRadius: '12px', borderTop: '5px solid #e34841', boxShadow: '0 20px 40px rgba(227, 72, 65, 0.15)' }} onClick={(e) => e.stopPropagation()}>
             <button className="close-btn" onClick={() => setShowDeleteConfirm(false)}>×</button>
             <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-              <div style={{ background: '#fdf2f2', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignX: 'center', alignItems: 'center', justifyContent: 'center', margin: '0 auto 15px' }}>
+              <div style={{ background: '#fdf2f2', width: '60px', height: '60px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 15px' }}>
                 <span style={{ color: '#e34841', fontSize: '2rem', fontWeight: 'bold' }}>!</span>
               </div>
               <h2 style={{ color: '#302825', fontSize: '1.4rem', margin: '0 0 8px' }}>প্রোফাইল ডিলিট করতে চান?</h2>
@@ -324,6 +447,9 @@ function RegisterForm({ registration, updateRegistration, onImageChange, onSubmi
             <option>সন্ধ্যা ৬টা - রাত ১০টা</option>
           </select>
         </label>
+        <label>পাসওয়ার্ড
+          <input type="password" required value={registration.password || ''} onChange={(event) => updateRegistration('password', event.target.value)} placeholder="আপনার পাসওয়ার্ড লিখুন" />
+        </label>
         <label>আপনার সম্পর্কে ছোট্ট note
           <textarea value={registration.note} onChange={(event) => updateRegistration('note', event.target.value)} placeholder="কেন donor হতে চান?" />
         </label>
@@ -413,6 +539,9 @@ function EditProfileModal({ donor, onClose, onSave }) {
               <option value="Busy">Busy (এই মুহূর্তে ব্যস্ত)</option>
               <option value="Unavailable">Unavailable (এখন available নন)</option>
             </select>
+          </label>
+          <label>পাসওয়ার্ড
+            <input type="password" required value={formData.password || ''} onChange={(e) => handleChange('password', e.target.value)} placeholder="আপনার পাসওয়ার্ড লিখুন" />
           </label>
           <label>আপনার সম্পর্কে ছোট্ট note
             <textarea value={formData.note} onChange={(e) => handleChange('note', e.target.value)} placeholder="কেন donor হতে চান?" />

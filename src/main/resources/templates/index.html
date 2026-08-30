@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="bn">
+<head th:replace="~{fragments :: head('রক্তবন্ধু — BloodBond Bangladesh')}"></head>
+<body>
+<div class="app-shell">
+    <header th:replace="~{fragments :: topbar}"></header>
+
+    <main id="top">
+        <section class="hero">
+            <div class="hero-content">
+                <p class="overline">বাংলাদেশের trusted blood donor network</p>
+                <h1>আজ আপনার রক্তে<br/><em>বাঁচুক একটি জীবন।</em></h1>
+                <p class="hero-subtitle">আপনার কাছাকাছি verified donor খুঁজুন। রক্তের গ্রুপ, এলাকা এবং availability অনুযায়ী সহজেই যোগাযোগ করুন।</p>
+                <div class="hero-actions">
+                    <a class="primary-btn" href="#directory">ডোনার খুঁজুন <span>↓</span></a>
+                    <a class="text-btn" th:href="@{/register}">আমি donor হতে চাই <span>→</span></a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="blood-drop">+</div>
+                <div class="hero-stat">
+                    <strong th:text="${donorCount}">1253</strong>
+                    <span>registered donors</span>
+                </div>
+                <div class="hero-note">“একটি ছোট্ট সাহায্য<br/>কারও পুরো পৃথিবী।”</div>
+            </div>
+        </section>
+
+        <section class="trust-strip">
+            <div><strong>২৪/৭</strong><span>জরুরি সাপোর্ট</span></div>
+            <div><strong>৬৪</strong><span>জেলায় donor</span></div>
+            <div><strong>১,২৫৩+</strong><span>সক্রিয় সদস্য</span></div>
+            <div><strong>১০০%</strong><span>মানবিক উদ্যোগ</span></div>
+        </section>
+
+        <section class="directory-section" id="directory">
+            <div class="section-intro">
+                <div>
+                    <p class="overline">আপনার প্রয়োজনের মানুষটি</p>
+                    <h2>Donor directory</h2>
+                </div>
+                <p>রক্তের গ্রুপ ও এলাকা বেছে নিয়ে<br/>কাছাকাছি donor খুঁজে নিন।</p>
+            </div>
+
+            <form class="filter-bar" method="get" th:action="@{/}">
+                <div class="search-box">
+                    <span>⌕</span>
+                    <input type="text" placeholder="নাম বা এলাকার নাম লিখুন..."/>
+                </div>
+                <div class="search-box district-search">
+                    <span>⌖</span>
+                    <input type="text" name="district" th:value="${districtQuery}" placeholder="জেলা লিখে search করুন..."/>
+                </div>
+                <select name="blood">
+                    <option th:each="group : ${bloodGroups}"
+                            th:value="${group}"
+                            th:text="${group}"
+                            th:selected="${group == blood}">A+</option>
+                </select>
+                <select>
+                    <option>সব এলাকা</option>
+                    <option th:each="item : ${districts}" th:text="${item}">ঢাকা</option>
+                </select>
+                <button class="primary-btn filter-submit" type="submit">খুঁজুন</button>
+            </form>
+
+            <div class="result-line">
+                <span><strong th:text="${#lists.size(donors)}">0</strong> জন donor পাওয়া গেছে</span>
+                <span class="available-key"><i></i> এখন available</span>
+            </div>
+
+            <div class="donor-grid">
+                <article class="donor-card" th:each="donor : ${donors}">
+                    <div class="card-image-wrap">
+                        <img th:src="${donor.image}" th:alt="${donor.name}"/>
+                        <span class="online-dot" th:classappend="${donor.statusCss}"></span>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-heading">
+                            <div>
+                                <h3 th:text="${donor.name}">নাম</h3>
+                                <p th:text="${donor.displayArea + ', ' + donor.district}">এলাকা</p>
+                            </div>
+                            <span class="blood-badge" th:text="${donor.blood}">A+</span>
+                        </div>
+                        <p class="donor-note">
+                            <strong th:text="${donor.blood + ' ' + donor.name}">A+ Name</strong>
+                            — <span th:text="${donor.note}">নোট</span>
+                        </p>
+                        <div class="card-meta">
+                            <span th:class="${donor.currentlyAvailable} ? 'eligible-status' : 'ineligible-status'"
+                                  th:text="'● ' + ${donor.availabilityLabel}">status</span>
+                            <span class="rating">★ <span th:text="${donor.ratingLabel}">নতুন</span>
+                                <small th:text="'(' + ${donor.reviews} + ')'">(0)</small>
+                            </span>
+                        </div>
+                        <a class="outline-btn" th:href="@{/donors/{id}(id=${donor.id})}">Profile দেখুন <span>→</span></a>
+                    </div>
+                </article>
+            </div>
+
+            <div class="empty" th:if="${#lists.isEmpty(donors)}">
+                এই filter-এ কোনো donor পাওয়া যায়নি। অন্য এলাকা বা blood group চেষ্টা করুন।
+            </div>
+        </section>
+
+        <section class="impact-section" id="how-it-works">
+            <div>
+                <p class="overline">একসাথে আমরা পারি</p>
+                <h2>রক্তের সম্পর্ক<br/><em>মানবতার সম্পর্ক।</em></h2>
+            </div>
+            <div class="impact-copy">
+                <p>রক্তবন্ধু এমন একটি community যেখানে donor ও receiver সরাসরি একে অপরের কাছে পৌঁছাতে পারে। আপনার এক ব্যাগ রক্ত কারও পরিবারের জন্য নতুন আশার শুরু হতে পারে।</p>
+                <a class="text-btn" th:href="@{/register}">community-তে যোগ দিন <span>→</span></a>
+            </div>
+        </section>
+    </main>
+
+    <footer th:replace="~{fragments :: footer}"></footer>
+    <a th:replace="~{fragments :: notice}"></a>
+</div>
+</body>
+</html>

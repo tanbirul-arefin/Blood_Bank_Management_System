@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="bn">
+<head th:replace="~{fragments :: head('লগইন — রক্তবন্ধু')}"></head>
+<body>
+<div class="app-shell" style="min-height: 100vh; display: flex; flex-direction: column; justify-content: space-between;">
+    <header class="topbar">
+        <a class="brand" th:href="@{/login}">
+            <span class="brand-mark">+</span>
+            <span>রক্তবন্ধু<small>BloodBond Bangladesh</small></span>
+        </a>
+    </header>
+
+    <main class="register-page" style="display: grid; grid-template-columns: 1fr; place-items: center; padding: 40px 20px;">
+        <div class="register-form" style="width: min(450px, 100%); margin: 0 auto; box-shadow: 0 10px 30px rgba(32, 16, 12, 0.08); border-radius: 8px;">
+            <div class="form-head" style="text-align: center; margin-bottom: 25px;">
+                <span style="color: #d94740; font-weight: bold; font-size: 0.9rem;">স্বাগতম</span>
+                <h2 style="font-size: 1.8rem; margin: 5px 0 0; color: #3e3530;">রক্তবন্ধু একাউন্টে লগইন করুন</h2>
+            </div>
+            
+            <div th:if="${error}" class="error-message" style="background: #fdf2f2; border: 1px solid #f8b4b4; color: #b91c1c; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 0.85rem; font-weight: bold; text-align: center;" th:text="${error}">
+                ত্রুটি বার্তা
+            </div>
+            
+            <div th:if="${notice}" class="notice" style="background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; padding: 12px; border-radius: 6px; margin-bottom: 20px; font-size: 0.85rem; font-weight: bold; text-align: center; display: block;" th:text="${notice}">
+                সফলতা বার্তা
+            </div>
+
+            <form th:action="@{/login}" method="post">
+                <label style="display: block; margin-bottom: 15px;">মোবাইল নম্বর
+                    <input type="text" name="phone" required placeholder="যেমন: 01712345678" style="width: 100%; padding: 12px; border: 1px solid #e5dcd5; border-radius: 6px; margin-top: 5px; outline: none; font-size: 0.9rem; box-sizing: border-box;"/>
+                </label>
+                <label style="display: block; margin-bottom: 25px;">পাসওয়ার্ড
+                    <input type="password" name="password" required placeholder="আপনার পাসওয়ার্ড লিখুন" style="width: 100%; padding: 12px; border: 1px solid #e5dcd5; border-radius: 6px; margin-top: 5px; outline: none; font-size: 0.9rem; box-sizing: border-box;"/>
+                </label>
+                
+                <button class="primary-btn submit-btn" type="submit" style="width: 100%; display: block; text-align: center; justify-content: center; padding: 14px; font-weight: bold; font-size: 1rem; border-radius: 6px; cursor: pointer; border: 0; background: #e34841; color: white;">লগইন করুন <span>→</span></button>
+            </form>
+            
+            <div style="text-align: center; margin-top: 25px; font-size: 0.85rem; color: #766a62;">
+                নতুন ডোনার? 
+                <a th:href="@{/register}" style="color: #e34841; font-weight: bold; text-decoration: none; margin-left: 5px;">ডোনার হিসেবে রেজিস্ট্রেশন করুন</a>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments :: footer}"></footer>
+</div>
+</body>
+</html>

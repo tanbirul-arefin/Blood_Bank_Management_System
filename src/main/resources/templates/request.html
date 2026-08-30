@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="bn">
+<head th:replace="~{fragments :: head('রক্তের অনুরোধ — রক্তবন্ধু')}"></head>
+<body>
+<div class="app-shell">
+    <header th:replace="~{fragments :: topbar}"></header>
+
+    <main class="system-page request-page">
+        <a class="back-btn" th:href="@{/}">← donor directory-তে ফিরে যান</a>
+        <div class="system-heading">
+            <div>
+                <p class="overline">Customer · BloodRequest</p>
+                <h1>Emergency blood request</h1>
+                <p>Stock-এ প্রয়োজনীয় blood না থাকলে আপনার location-এর eligible donor-দের কাছে request যাবে।</p>
+            </div>
+        </div>
+        <form class="request-form" th:action="@{/request}" th:object="${bloodRequest}" method="post">
+            <label>আপনার নাম
+                <input type="text" th:field="*{requesterName}" required placeholder="যিনি request করছেন"/>
+            </label>
+            <label>Patient-এর নাম
+                <input type="text" th:field="*{patientName}" required placeholder="রোগীর নাম"/>
+            </label>
+            <div class="form-row">
+                <label>Blood group
+                    <select th:field="*{blood}">
+                        <option th:each="group : ${bloodGroupsOnly}" th:value="${group}" th:text="${group}">A+</option>
+                    </select>
+                </label>
+                <label>কত bag প্রয়োজন?
+                    <input type="number" min="1" max="10" th:field="*{bags}" required/>
+                </label>
+            </div>
+            <div class="form-row">
+                <label>কোথায় প্রয়োজন?
+                    <input type="text" th:field="*{location}" required placeholder="হাসপাতাল / এলাকা"/>
+                </label>
+                <label>মোবাইল নম্বর
+                    <input type="text" th:field="*{phone}" required placeholder="01XXXXXXXXX"/>
+                </label>
+            </div>
+            <button class="primary-btn submit-btn" type="submit">Emergency request পাঠান <span>→</span></button>
+        </form>
+    </main>
+
+    <footer th:replace="~{fragments :: footer}"></footer>
+    <a th:replace="~{fragments :: notice}"></a>
+</div>
+</body>
+</html>

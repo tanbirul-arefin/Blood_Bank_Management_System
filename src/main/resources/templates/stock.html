@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="bn">
+<head th:replace="~{fragments :: head('Blood stock — রক্তবন্ধু')}"></head>
+<body>
+<div class="app-shell">
+    <header th:replace="~{fragments :: topbar}"></header>
+
+    <main class="system-page">
+        <div class="system-heading">
+            <div>
+                <p class="overline">BloodBankManager · BloodStock</p>
+                <h1>Blood stock overview</h1>
+                <p>Java system-এর current inventory snapshot। Stock কম থাকলে emergency donor request পাঠান।</p>
+            </div>
+            <a class="primary-btn" th:href="@{/request}">রক্তের অনুরোধ করুন <span>→</span></a>
+        </div>
+        <div class="stock-total">
+            <strong th:text="${totalUnits}">0</strong>
+            <span>মোট blood units available</span>
+        </div>
+        <div class="stock-grid">
+            <div class="stock-card" th:each="item : ${stocks}" th:classappend="${item.low} ? 'stock-low'">
+                <span class="blood-badge" th:text="${item.bloodGroup}">A+</span>
+                <strong th:text="${item.units}">0</strong>
+                <small th:text="${item.low} ? 'Low stock' : 'units available'">units</small>
+            </div>
+        </div>
+        <div class="java-note">
+            <strong>Java logic:</strong> BloodStockService.removeUnits() পর্যাপ্ত stock না থাকলে false দেয়; তখন BloodRequest তৈরি করে eligible donor খোঁজা হয়।
+        </div>
+    </main>
+
+    <footer th:replace="~{fragments :: footer}"></footer>
+    <a th:replace="~{fragments :: notice}"></a>
+</div>
+</body>
+</html>

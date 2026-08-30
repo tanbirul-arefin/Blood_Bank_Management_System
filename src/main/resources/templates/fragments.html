@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(pageTitle)">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title th:text="${pageTitle}">রক্তবন্ধু</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<header class="topbar" th:fragment="topbar">
+    <a class="brand" th:href="@{/}">
+        <span class="brand-mark">+</span>
+        <span>রক্তবন্ধু<small>BloodBond Bangladesh</small></span>
+    </a>
+    <nav>
+        <a th:href="@{/}" th:classappend="${activeTab == 'find'} ? 'nav-active'">ডোনার খুঁজুন</a>
+        <a th:href="@{/register}" th:classappend="${activeTab == 'register'} ? 'nav-active'">ডোনার হোন</a>
+        <a th:href="@{/request}" th:classappend="${activeTab == 'request'} ? 'nav-active'">রক্তের অনুরোধ</a>
+    </nav>
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <span th:if="${loggedInUser != null}" class="user-greeting" style="font-size: 0.82rem; color: #766a62; font-weight: bold; background: #fdf2f2; padding: 6px 12px; border-radius: 20px; display: flex; align-items: center; gap: 4px;">
+            👤 <a th:href="@{/donors/{id}(id=${loggedInUser.id})}" th:text="${loggedInUser.name}" style="text-decoration: none; color: #3e3530;">নাম</a>
+        </span>
+        <a th:if="${loggedInUser != null}" class="logout-btn" th:href="@{/logout}" style="color: #766a62; font-size: 0.8rem; text-decoration: none; font-weight: bold; padding: 6px 12px; border: 1px solid #eee5dd; border-radius: 4px; transition: all 0.2s; background: transparent;">লগআউট</a>
+        <a th:if="${loggedInUser == null}" class="login-btn" th:href="@{/login}" style="color: #766a62; font-size: 0.8rem; text-decoration: none; font-weight: bold; padding: 6px 12px; border: 1px solid #eee5dd; border-radius: 4px; transition: all 0.2s; background: transparent;">লগইন</a>
+        <a class="emergency-btn" th:href="@{/request}">জরুরি সহায়তা <span>↗</span></a>
+    </div>
+</header>
+
+<footer th:fragment="footer">
+    <span class="brand"><span class="brand-mark">+</span> রক্তবন্ধু</span>
+    <span>মানুষ মানুষের জন্য।</span>
+    <span>© ২০২৪ BloodBond Bangladesh</span>
+</footer>
+
+<a class="notice" th:fragment="notice" th:if="${notice}" th:href="@{/}" th:text="${notice}">Notice</a>
+</body>
+</html>

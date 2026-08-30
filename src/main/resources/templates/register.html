@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="bn">
+<head th:replace="~{fragments :: head('ডোনার হোন — রক্তবন্ধু')}"></head>
+<body>
+<div class="app-shell">
+    <header th:replace="~{fragments :: topbar}"></header>
+
+    <main class="register-page">
+        <div class="register-intro">
+            <a class="back-btn" th:href="@{/}">← ফিরে যান</a>
+            <p class="overline">মানবতার পাশে দাঁড়ান</p>
+            <h1>আপনার রক্ত,<br/><em>কারও নতুন সকাল।</em></h1>
+            <p>আপনার profile যুক্ত করুন। কেউ আপনার এলাকার রক্ত খুঁজলে আপনার তথ্য দেখে সরাসরি যোগাযোগ করতে পারবে।</p>
+            <div class="register-benefits">
+                <span>✓ আপনার এলাকার মানুষের পাশে থাকুন</span>
+                <span>✓ প্রয়োজনের সময় সহজে যোগাযোগ</span>
+                <span>✓ নিজের donor পরিচয় তৈরি করুন</span>
+            </div>
+        </div>
+
+        <form class="register-form" th:action="@{/register}" th:object="${donor}" method="post" enctype="multipart/form-data" onsubmit="localStorage.setItem('myDonorPhone', document.getElementById('phone').value.replace(/\D/g, ''))">
+            <div class="form-head">
+                <span>01 — আপনার পরিচয়</span>
+                <h2>Donor profile তৈরি করুন</h2>
+            </div>
+            <label>পুরো নাম
+                <input type="text" th:field="*{name}" required placeholder="যেমন: আরিফ হোসেন"/>
+                <span class="error-message" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">নামের ত্রুটি</span>
+            </label>
+            <div class="form-row">
+                <label>Blood group
+                    <select th:field="*{blood}">
+                        <option th:each="group : ${bloodGroupsOnly}" th:value="${group}" th:text="${group}">A+</option>
+                    </select>
+                    <span class="error-message" th:if="${#fields.hasErrors('blood')}" th:errors="*{blood}">রক্তের গ্রুপের ত্রুটি</span>
+                </label>
+                <label>মোবাইল নম্বর
+                    <input type="text" id="phone" th:field="*{phone}" required placeholder="01XXXXXXXXX"/>
+                    <span class="error-message" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">মোবাইল নম্বরের ত্রুটি</span>
+                </label>
+            </div>
+            <div class="form-row">
+                <label>বয়স
+                    <input type="number" min="1" max="120" th:field="*{age}" required placeholder="১৮+"/>
+                    <span class="error-message" th:if="${#fields.hasErrors('age')}" th:errors="*{age}">বয়সের ত্রুটি</span>
+                </label>
+                <label>শেষবার রক্ত দিয়েছেন
+                    <input type="date" th:field="*{lastDonation}"/>
+                    <span class="error-message" th:if="${#fields.hasErrors('lastDonation')}" th:errors="*{lastDonation}">তারিখের ত্রুটি</span>
+                </label>
+            </div>
+            <div class="form-row">
+                <label>জেলা
+                    <select th:field="*{district}">
+                        <option th:each="item : ${districts}" th:value="${item}" th:text="${item}">ঢাকা</option>
+                    </select>
+                    <span class="error-message" th:if="${#fields.hasErrors('district')}" th:errors="*{district}">জেলার ত্রুটি</span>
+                </label>
+                <label>এলাকা
+                    <input type="text" th:field="*{area}" required placeholder="যেমন: ধানমন্ডি"/>
+                    <span class="error-message" th:if="${#fields.hasErrors('area')}" th:errors="*{area}">এলাকার ত্রুটি</span>
+                </label>
+            </div>
+            <label>কখন available থাকেন?
+                <select th:field="*{availability}">
+                    <option th:each="opt : ${availabilityOptions}" th:value="${opt}" th:text="${opt}">যেকোনো সময়</option>
+                </select>
+                <span class="error-message" th:if="${#fields.hasErrors('availability')}" th:errors="*{availability}">অ্যাভেইল্যাবিলিটির ত্রুটি</span>
+            </label>
+            <label>পাসওয়ার্ড
+                <input type="password" th:field="*{password}" required placeholder="আপনার পাসওয়ার্ড লিখুন"/>
+                <span class="error-message" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">পাসওয়ার্ডের ত্রুটি</span>
+            </label>
+            <label>আপনার সম্পর্কে ছোট্ট note
+                <textarea th:field="*{note}" placeholder="কেন donor হতে চান?"></textarea>
+                <span class="error-message" th:if="${#fields.hasErrors('note')}" th:errors="*{note}">নোটের ত্রুটি</span>
+            </label>
+            <label>Profile picture <span class="optional">(ঐচ্ছিক)</span>
+                <input type="file" name="imageFile" accept="image/*"/>
+            </label>
+            <button class="primary-btn submit-btn" type="submit">আমার profile যুক্ত করুন <span>→</span></button>
+            <p class="privacy-note">ছবি আপনার device থেকেই নেওয়া হবে।</p>
+        </form>
+    </main>
+
+    <footer th:replace="~{fragments :: footer}"></footer>
+    <a th:replace="~{fragments :: notice}"></a>
+</div>
+</body>
+</html>
