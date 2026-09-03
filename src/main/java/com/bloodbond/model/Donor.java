@@ -1,18 +1,24 @@
 package com.bloodbond.model;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.FetchType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "donors")
@@ -37,6 +43,11 @@ public class Donor {
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate lastDonation;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "donor_donation_history", joinColumns = @JoinColumn(name = "donor_id"))
+    @Column(name = "donation_date")
+    private List<LocalDate> donationHistory = new ArrayList<>();
     private String availability = "যেকোনো সময়";
     private String status = "Available";
     private String image;
@@ -58,10 +69,7 @@ public class Donor {
     }
 
     public boolean isEligible() {
-        if (age == null) {
-            return true;
-        }
-        if (age < 18) {
+        if (age != null && age < 18) {
             return false;
         }
         if (lastDonation == null) {
@@ -185,6 +193,29 @@ public class Donor {
 
     public void setLastDonation(LocalDate lastDonation) {
         this.lastDonation = lastDonation;
+    }
+
+    @Transient
+    public List<LocalDate> getSortedDonationHistory() {
+        List<LocalDate> history = new ArrayList<>(donationHistory == null ? List.of() : donationHistory);
+        if (lastDonation != null && !history.contains(lastDonation)) {
+            history.add(lastDonation);
+        }
+        history.sort(java.util.Comparator.reverseOrder());
+        return history;
+    }
+
+    @Transient
+    public int getDonationCount() {
+        return getSortedDonationHistory().size();
+    }
+
+    public List<LocalDate> getDonationHistory() {
+        return donationHistory;
+    }
+
+    public void setDonationHistory(List<LocalDate> donationHistory) {
+        this.donationHistory = donationHistory == null ? new ArrayList<>() : donationHistory;
     }
 
     public String getAvailability() {

@@ -42,11 +42,32 @@
                     <span>Availability</span>
                     <strong th:text="${donor.availability}">availability</strong>
                 </div>
-                <div>
+                <button type="button" class="donation-summary" onclick="this.parentElement.parentElement.nextElementSibling.classList.toggle('history-open'); this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') !== 'true');" aria-expanded="false">
                     <span>Last donation</span>
                     <strong th:text="${donor.lastDonationLabel}">Never donated</strong>
-                </div>
+                    <small>History দেখুন</small>
+                </button>
             </div>
+            <section class="donation-history">
+                <div class="history-heading">
+                    <strong th:text="${donor.donationCount}">0</strong>
+                    <span>বার রক্ত দিয়েছেন</span>
+                </div>
+                <ol th:if="${donor.donationCount > 0}">
+                    <li th:each="date, item : ${donor.sortedDonationHistory}">
+                        <span th:text="${item.index + 1}">1</span>
+                        <strong th:text="${#temporals.format(date, 'dd MMMM yyyy')}">18 November 2025</strong>
+                        <em th:if="${item.index == 0}">সর্বশেষ</em>
+                    </li>
+                </ol>
+                <p class="empty-history" th:unless="${donor.donationCount > 0}">এই donor এখনও রক্ত দান করেননি।</p>
+                <form class="add-donation-form" th:if="${loggedInUser != null && loggedInUser.id == donor.id}" th:action="@{/donors/{id}/donations(id=${donor.id})}" method="post">
+                    <label>আগের বা নতুন donation-এর তারিখ যোগ করুন
+                        <input type="date" name="donationDate" required/>
+                    </label>
+                    <button class="primary-btn" type="submit">+ Date যোগ করুন</button>
+                </form>
+            </section>
             <p class="profile-note">“<span th:text="${donor.note}">note</span>”</p>
             <a class="call-btn" th:href="'tel:' + ${donor.phone}">☎ কল করুন</a>
 

@@ -5,9 +5,11 @@ const districts = ['ঢাকা', 'চট্টগ্রাম', 'সিলে�
 const districtEnglish = { 'ঢাকা': 'Dhaka', 'চট্টগ্রাম': 'Chittagong', 'সিলেট': 'Sylhet', 'রাজশাহী': 'Rajshahi', 'খুলনা': 'Khulna', 'ময়মনসিংহ': 'Mymensingh', 'রংপুর': 'Rangpur', 'বরিশাল': 'Barisal', 'কুমিল্লা': 'Cumilla', 'জয়পুরহাট': 'Joypurhat' };
 const districtAliases = { dhaka: 'ঢাকা', chittagong: 'চট্টগ্রাম', chattogram: 'চট্টগ্রাম', sylhet: 'সিলেট', rajshahi: 'রাজশাহী', khulna: 'খুলনা', mymensingh: 'ময়মনসিংহ', rangpur: 'রংপুর', barisal: 'বরিশাল', barishal: 'বরিশাল', cumilla: 'কুমিল্লা', comilla: 'কুমিল্লা', joypurhat: 'জয়পুরহাট' };
 const stockData = { 'A+': 8, 'A-': 3, 'B+': 6, 'B-': 2, 'AB+': 4, 'AB-': 1, 'O+': 10, 'O-': 2 };
+const getDonationHistory = (donor) => [...new Set([...(donor.donationHistory || []), donor.lastDonation].filter(Boolean))].sort((first, second) => second.localeCompare(first));
+const formatDonationDate = (date) => date ? new Intl.DateTimeFormat('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(`${date}T00:00:00`)) : 'এখনও রক্ত দেননি';
 const starterDonors = [
-  { id: 1, name: 'Nadia Rahman', nameBn: 'নাদিয়া রহমান', blood: 'A+', district: 'সিলেট', area: 'Zindabazar', areaBn: 'জিন্দাবাজার', phone: '01712-345678', availability: 'সকাল ৮টা - দুপুর ১২টা', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80', note: 'জরুরি প্রয়োজনে পাশে আছি।', rating: 5, reviews: 18, verified: true, password: '1234' },
-  { id: 2, name: 'Sajid Hossain', nameBn: 'সাজিদ হোসেন', blood: 'A+', district: 'ঢাকা', area: 'Dhanmondi', areaBn: 'ধানমন্ডি', phone: '01812-345678', availability: 'সন্ধ্যা ৬টা - রাত ৯টা', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80', note: 'রক্ত দিতে নিয়মিত প্রস্তুত আছি।', rating: 4.9, reviews: 12, verified: true, password: '1234' },
+  { id: 1, name: 'Nadia Rahman', nameBn: 'নাদিয়া রহমান', blood: 'A+', district: 'সিলেট', area: 'Zindabazar', areaBn: 'জিন্দাবাজার', phone: '01712-345678', availability: 'সকাল ৮টা - দুপুর ১২টা', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80', note: 'জরুরি প্রয়োজনে পাশে আছি।', rating: 5, reviews: 18, verified: true, password: '1234', lastDonation: '2025-11-18', donationHistory: ['2025-11-18', '2025-07-10', '2025-03-02'] },
+  { id: 2, name: 'Sajid Hossain', nameBn: 'সাজিদ হোসেন', blood: 'A+', district: 'ঢাকা', area: 'Dhanmondi', areaBn: 'ধানমন্ডি', phone: '01812-345678', availability: 'সন্ধ্যা ৬টা - রাত ৯টা', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80', note: 'রক্ত দিতে নিয়মিত প্রস্তুত আছি।', rating: 4.9, reviews: 12, verified: true, password: '1234', lastDonation: '2025-12-22', donationHistory: ['2025-12-22', '2025-08-15', '2025-04-05', '2024-12-20'] },
   { id: 3, name: 'Farhana Ali', nameBn: 'ফারহানা আলী', blood: 'B+', district: 'চট্টগ্রাম', area: 'GEC Circle', areaBn: 'জিইসি মোড়', phone: '01912-345678', availability: 'এই সপ্তাহে যেকোনো সময়', image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80', note: 'প্রয়োজন হলে দ্রুত যোগাযোগ করুন।', rating: 5, reviews: 9, verified: true, password: '1234' },
   { id: 4, name: 'Arif Hossain', nameBn: 'আরিফ হোসেন', blood: 'O-', district: 'রংপুর', area: 'City Gate', areaBn: 'সিটি গেট', phone: '01612-345678', availability: 'যেকোনো সময়', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80', note: 'জরুরি donor হিসেবে যুক্ত আছি।', rating: 4.8, reviews: 21, verified: true, password: '1234' },
   { id: 5, name: 'Mim Akter', nameBn: 'মিম আক্তার', blood: 'O+', district: 'সিলেট', area: 'Amberkhana', areaBn: 'আম্বরখানা', phone: '01512-345678', availability: 'সকাল ৯টা - দুপুর ১টা', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80', note: 'রক্তের জন্য আমাকে জানাতে পারেন।', rating: 4.9, reviews: 15, verified: false, password: '1234' },
@@ -92,6 +94,7 @@ function App() {
       rating: 5.0,
       reviews: 1,
       verified: false,
+      donationHistory: registration.lastDonation ? [registration.lastDonation] : [],
       nameBn: registration.name,
       areaBn: registration.area
     };
@@ -127,10 +130,11 @@ function App() {
   };
 
   const handleSaveEdit = (updatedDonor) => {
-    setDonors((current) => current.map((donor) => donor.id === updatedDonor.id ? updatedDonor : donor));
-    if (currentUser && currentUser.id === updatedDonor.id) {
-      setCurrentUser(updatedDonor);
-      localStorage.setItem('currentUser', JSON.stringify(updatedDonor));
+    const donorWithHistory = { ...updatedDonor, donationHistory: getDonationHistory(updatedDonor) };
+    setDonors((current) => current.map((donor) => donor.id === donorWithHistory.id ? donorWithHistory : donor));
+    if (currentUser && currentUser.id === donorWithHistory.id) {
+      setCurrentUser(donorWithHistory);
+      localStorage.setItem('currentUser', JSON.stringify(donorWithHistory));
     }
     setEditingDonor(null);
     setNotice('আপনার প্রোফাইল তথ্য সফলভাবে আপডেট করা হয়েছে।');
@@ -256,7 +260,7 @@ function App() {
 }
 
 function DonorCard({ donor, onOpen }) {
-  const eligible = !donor.age || (donor.age >= 18 && (!donor.lastDonation || (Date.now() - new Date(donor.lastDonation).getTime()) >= 90 * 24 * 60 * 60 * 1000));
+  const eligible = (!donor.age || donor.age >= 18) && (!donor.lastDonation || (Date.now() - new Date(donor.lastDonation).getTime()) >= 90 * 24 * 60 * 60 * 1000);
   const status = donor.status || 'Available';
   return (
     <article className="donor-card">
@@ -284,7 +288,9 @@ function DonorCard({ donor, onOpen }) {
 }
 
 function DonorModal({ donor, onClose, onReview, currentUser, onEditClick, onDeleteClick }) {
-  const eligible = !donor.age || (donor.age >= 18 && (!donor.lastDonation || (Date.now() - new Date(donor.lastDonation).getTime()) >= 90 * 24 * 60 * 60 * 1000));
+  const eligible = (!donor.age || donor.age >= 18) && (!donor.lastDonation || (Date.now() - new Date(donor.lastDonation).getTime()) >= 90 * 24 * 60 * 60 * 1000);
+  const donationHistory = getDonationHistory(donor);
+  const [showDonationHistory, setShowDonationHistory] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteReason, setDeleteReason] = useState('কেন চলে যেতে চাচ্ছেন আমাদের ছেড়ে আমাদের কে একটু উপকার করলে কি এমন হতো');
 
@@ -325,8 +331,22 @@ function DonorModal({ donor, onClose, onReview, currentUser, onEditClick, onDele
           <div><span>Phone</span><strong>{donor.phone}</strong></div>
           <div><span>Eligibility</span><strong className={eligible ? 'eligible-status' : 'ineligible-status'}>{eligible ? 'Eligible now' : 'Wait required'}</strong></div>
           <div><span>Availability</span><strong>{donor.availability}</strong></div>
-          <div><span>Last donation</span><strong>{donor.lastDonation || 'Never donated'}</strong></div>
+          <button type="button" className="donation-summary" onClick={() => setShowDonationHistory((visible) => !visible)} aria-expanded={showDonationHistory}>
+            <span>Last donation <small>{showDonationHistory ? 'বন্ধ করুন' : 'History দেখুন'}</small></span>
+            <strong>{formatDonationDate(donationHistory[0])}</strong>
+          </button>
         </div>
+        {showDonationHistory && (
+          <section className="donation-history" aria-label="Donation history">
+            <div className="history-heading">
+              <div><strong>{donationHistory.length}</strong><span>বার রক্ত দিয়েছেন</span></div>
+              <span>প্রতি donation-এর মাঝে অন্তত ৩ মাস</span>
+            </div>
+            {donationHistory.length ? (
+              <ol>{donationHistory.map((date, index) => <li key={date}><span>{index + 1}</span><strong>{formatDonationDate(date)}</strong>{index === 0 && <em>সর্বশেষ</em>}</li>)}</ol>
+            ) : <p className="empty-history">এই donor এখনও রক্ত দান করেননি।</p>}
+          </section>
+        )}
         <p className="profile-note">“{donor.note}”</p>
         <a className="call-btn" href={`tel:${donor.phone}`}>☎ কল করুন</a>
         

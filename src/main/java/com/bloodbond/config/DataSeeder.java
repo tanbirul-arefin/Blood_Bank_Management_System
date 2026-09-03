@@ -8,6 +8,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.LinkedHashMap;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -26,11 +28,21 @@ public class DataSeeder implements CommandLineRunner {
     public void run(String... args) {
         // Automatically set password to "1234" for existing rows with null passwords
         List<Donor> existing = donorRepository.findAll();
-        for (Donor d : existing) {
+        for (int index = 0; index < existing.size(); index++) {
+            Donor d = existing.get(index);
             if (d.getPassword() == null || d.getPassword().isBlank()) {
                 d.setPassword("1234");
-                donorRepository.save(d);
             }
+            if (d.getDonationHistory().isEmpty() && d.getName() != null && isDemoDonor(d.getName())) {
+                LocalDate latest = LocalDate.now().minusMonths(index + 1);
+                List<LocalDate> history = new ArrayList<>();
+                history.add(latest);
+                history.add(latest.minusMonths(4));
+                history.add(latest.minusMonths(8));
+                d.setLastDonation(latest);
+                d.setDonationHistory(history);
+            }
+            donorRepository.save(d);
         }
 
         if (donorRepository.count() == 0) {
@@ -48,6 +60,10 @@ public class DataSeeder implements CommandLineRunner {
             stock.put("O-", 2);
             stock.forEach((group, units) -> stockRepository.save(new BloodStock(group, units)));
         }
+    }
+
+    private boolean isDemoDonor(String name) {
+        return List.of("Nadia Rahman", "Sajid Hossain", "Farhana Ali", "Arif Hossain", "Mim Akter", "Tamim Rahman").contains(name);
     }
 
     private List<Donor> starterDonors() {
@@ -98,6 +114,9 @@ public class DataSeeder implements CommandLineRunner {
         d.setVerified(verified);
         d.setStatus("Available");
         d.setPassword("1234");
+        LocalDate latestDonation = LocalDate.now().minusMonths(6);
+        d.setLastDonation(latestDonation);
+        d.setDonationHistory(new ArrayList<>(List.of(latestDonation, latestDonation.minusMonths(4), latestDonation.minusMonths(8))));
         return d;
     }
 }

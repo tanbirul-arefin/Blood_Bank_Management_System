@@ -272,6 +272,31 @@ public class AppController {
         return "redirect:/donors/" + id;
     }
 
+    @PostMapping("/donors/{id}/donations")
+    public String addDonation(@PathVariable Long id,
+                              @RequestParam(required = false) java.time.LocalDate donationDate,
+                              HttpSession session,
+                              RedirectAttributes redirect) {
+        Donor loggedInUser = (Donor) session.getAttribute("loggedInUser");
+        if (loggedInUser == null) {
+            return "redirect:/login";
+        }
+        if (!loggedInUser.getId().equals(id)) {
+            redirect.addFlashAttribute("notice", "আপনি শুধুমাত্র নিজের donation history আপডেট করতে পারবেন।");
+            return "redirect:/donors/" + id;
+        }
+        if (donationDate != null) {
+            try {
+                donorService.addDonation(id, donationDate);
+                session.setAttribute("loggedInUser", donorService.getById(id));
+                redirect.addFlashAttribute("notice", "আপনার donation history-তে নতুন তারিখ যুক্ত হয়েছে।");
+            } catch (IllegalArgumentException exception) {
+                redirect.addFlashAttribute("notice", "ভবিষ্যতের তারিখ donation history-তে যোগ করা যাবে না।");
+            }
+        }
+        return "redirect:/donors/" + id;
+    }
+
     private void addCommon(Model model, String activeTab) {
         model.addAttribute("activeTab", activeTab);
         model.addAttribute("bloodGroups", AppConstants.BLOOD_GROUPS);

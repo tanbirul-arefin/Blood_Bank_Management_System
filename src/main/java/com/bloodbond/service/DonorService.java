@@ -4,6 +4,7 @@ import com.bloodbond.config.AppConstants;
 import com.bloodbond.model.Donor;
 import com.bloodbond.repository.DonorRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -12,6 +13,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -54,6 +58,19 @@ public class DonorService {
     }
 
     public Donor save(Donor donor, MultipartFile imageFile) {
+        if (donor.getId() != null) {
+            Donor existing = donorRepository.findById(donor.getId()).orElse(null);
+            if (existing != null) {
+                Set<java.time.LocalDate> history = new LinkedHashSet<>(existing.getDonationHistory());
+                history.addAll(donor.getDonationHistory());
+                if (donor.getLastDonation() != null) {
+                    history.add(donor.getLastDonation());
+                }
+                donor.setDonationHistory(new ArrayList<>(history));
+            }
+        } else if (donor.getLastDonation() != null && donor.getDonationHistory().isEmpty()) {
+            donor.getDonationHistory().add(donor.getLastDonation());
+        }
         if (donor.getPassword() == null || donor.getPassword().isBlank()) {
             donor.setPassword("1234");
         }
@@ -105,6 +122,19 @@ public class DonorService {
         double updated = reviews == 0 ? rating : ((current * reviews) + rating) / (reviews + 1);
         donor.setRating(updated);
         donor.setReviews(reviews + 1);
+        donorRepository.save(donor);
+    }
+
+    @Transactional
+    public void addDonation(Long donorId, java.time.LocalDate donationDate) {
+        if (donationDate == null || donationDate.isAfter(java.time.LocalDate.now())) {
+            throw new IllegalArgumentException("Donation date must not be in the future");
+        }
+        Donor donor = getById(donorId);
+        Set<java.time.LocalDate> history = new LinkedHashSet<>(donor.getDonationHistory());
+        history.add(donationDate);
+        donor.setDonationHistory(new ArrayList<>(history));
+        donor.setLastDonation(history.stream().max(java.util.Comparator.naturalOrder()).orElse(null));
         donorRepository.save(donor);
     }
 

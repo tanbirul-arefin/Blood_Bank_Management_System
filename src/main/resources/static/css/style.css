@@ -104,6 +104,25 @@ footer .brand-mark { width: 24px; height: 24px; font-size: 1.2rem; }
 .profile-details div { padding: 13px; background: #f8f1eb; }
 .profile-details span { display: block; margin-bottom: 5px; color: #9a8e85; font-size: .68rem; }
 .profile-details strong { color: #4d413b; font-size: .8rem; }
+.donation-summary { position: relative; display: block; width: 100%; padding: 13px; border: 0; color: inherit; background: #f8f1eb; text-align: left; cursor: pointer; }
+.donation-summary:hover { background: #f5e9e1; }
+.donation-summary span { display: block; }
+.donation-summary small { position: absolute; top: 13px; right: 13px; color: #d34c44; font-size: .61rem; font-weight: 700; }
+.donation-summary strong { display: block; }
+.donation-history { display: none; margin: -7px 0 22px; padding: 15px; border: 1px solid #eadbd2; background: #fff8f4; }
+.donation-history.history-open { display: block; }
+.history-heading { display: flex; align-items: baseline; gap: 7px; padding-bottom: 11px; border-bottom: 1px solid #eedfd6; }
+.history-heading strong { color: #d94740; font-size: 1.45rem; }
+.history-heading span { color: #8e8178; font-size: .67rem; }
+.donation-history ol { display: grid; gap: 8px; margin: 13px 0 0; padding: 0; list-style: none; }
+.donation-history li { display: flex; align-items: center; gap: 9px; color: #51453e; font-size: .76rem; }
+.donation-history li > span { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; color: #c9443d; background: #fbe7e3; font-size: .65rem; font-weight: 700; }
+.donation-history li em { margin-left: auto; color: #4e9b61; font-size: .63rem; font-style: normal; font-weight: 700; }
+.empty-history { margin: 13px 0 0; color: #8e8178; font-size: .75rem; }
+.add-donation-form { display: flex; align-items: end; gap: 10px; margin-top: 16px; padding-top: 14px; border-top: 1px solid #eedfd6; }
+.add-donation-form label { display: grid; flex: 1; gap: 6px; color: #766a62; font-size: .68rem; font-weight: 700; }
+.add-donation-form input { width: 100%; padding: 9px 10px; border: 1px solid #e5dcd5; color: #3b3531; background: #fff; font-size: .78rem; }
+.add-donation-form .primary-btn { padding: 10px 13px; white-space: nowrap; }
 .profile-note { margin: 0 0 17px; color: #71655d; font-family: Georgia, serif; font-size: .96rem; }
 .call-btn { display: block; padding: 13px; color: white; background: #e34841; text-align: center; text-decoration: none; font-size: .83rem; font-weight: 700; }
 .review-form { margin-top: 24px; padding-top: 20px; border-top: 1px solid #eee5dd; }
@@ -154,7 +173,7 @@ footer .brand-mark { width: 24px; height: 24px; font-size: 1.2rem; }
 .request-form .submit-btn { grid-column: 1 / -1; }
 .request-form input, .request-form select { width: 100%; padding: 12px 11px; border: 1px solid #e5dcd5; outline: 0; background: #fff; color: #3b3531; font-size: .83rem; }
 @media (max-width: 850px) { .topbar { padding: 0 20px; } nav { gap: 13px; } .hero { grid-template-columns: 1fr; padding: 54px 30px 20px; } .hero-visual { min-height: 280px; } .trust-strip { padding: 18px 25px; } .trust-strip div { padding: 4px 12px; flex-direction: column; gap: 2px; } .donor-grid { grid-template-columns: repeat(2, 1fr); } .register-page { grid-template-columns: 1fr; gap: 10px; margin-top: 20px; } .back-btn { margin-bottom: 35px; } .stock-grid { grid-template-columns: repeat(2, 1fr); } .system-heading { align-items: flex-start; flex-direction: column; } }
-@media (max-width: 560px) { .topbar { height: 70px; } .brand small { display: none; } .emergency-btn { padding: 9px; font-size: 0; } .emergency-btn span { margin: 0; font-size: 1rem; } .hero { padding: 43px 22px 0; } h1 { font-size: 3.15rem; } .hero-visual { min-height: 255px; } .blood-drop { right: 80px; width: 125px; height: 165px; font-size: 3rem; } .hero-visual:before { width: 240px; height: 240px; right: 10px; } .hero-note { right: 0; font-size: 1rem; } .hero-stat { right: 0; } .trust-strip { grid-template-columns: repeat(2, 1fr); gap: 15px; } .trust-strip div:nth-child(2) { border: 0; } .directory-section { padding: 60px 18px 75px; } .section-intro { display: block; } .section-intro > p { margin-top: 14px; text-align: left; } .filter-bar { grid-template-columns: 1fr; } .filter-bar select { border-left: 0; border-top: 1px solid #eee8e1; } .donor-grid { grid-template-columns: 1fr; } .impact-section { grid-template-columns: 1fr; gap: 25px; padding: 55px 22px; } footer { flex-wrap: wrap; gap: 15px; padding: 24px 20px; } .modal { padding: 22px; } .review-fields { flex-direction: column; } .register-page { padding: 0 18px; } .register-form { padding: 22px; } .form-row { grid-template-columns: 1fr; gap: 0; } .system-page { margin-top: 25px; padding: 0 18px; } .system-heading { padding: 25px 20px; } .stock-grid { grid-template-columns: 1fr 1fr; } .request-form { grid-template-columns: 1fr; padding: 22px; } .request-form > label, .request-form .form-row, .request-form .submit-btn { grid-column: 1; } }
+@media (max-width: 560px) { .topbar { height: 70px; } .brand small { display: none; } .emergency-btn { padding: 9px; font-size: 0; } .emergency-btn span { margin: 0; font-size: 1rem; } .hero { padding: 43px 22px 0; } h1 { font-size: 3.15rem; } .hero-visual { min-height: 255px; } .blood-drop { right: 80px; width: 125px; height: 165px; font-size: 3rem; } .hero-visual:before { width: 240px; height: 240px; right: 10px; } .hero-note { right: 0; font-size: 1rem; } .hero-stat { right: 0; } .trust-strip { grid-template-columns: repeat(2, 1fr); gap: 15px; } .trust-strip div:nth-child(2) { border: 0; } .directory-section { padding: 60px 18px 75px; } .section-intro { display: block; } .section-intro > p { margin-top: 14px; text-align: left; } .filter-bar { grid-template-columns: 1fr; } .filter-bar select { border-left: 0; border-top: 1px solid #eee8e1; } .donor-grid { grid-template-columns: 1fr; } .impact-section { grid-template-columns: 1fr; gap: 25px; padding: 55px 22px; } footer { flex-wrap: wrap; gap: 15px; padding: 24px 20px; } .modal { padding: 22px; } .review-fields { flex-direction: column; } .add-donation-form { align-items: stretch; flex-direction: column; } .add-donation-form .primary-btn { width: 100%; } .register-page { padding: 0 18px; } .register-form { padding: 22px; } .form-row { grid-template-columns: 1fr; gap: 0; } .system-page { margin-top: 25px; padding: 0 18px; } .system-heading { padding: 25px 20px; } .stock-grid { grid-template-columns: 1fr 1fr; } .request-form { grid-template-columns: 1fr; padding: 22px; } .request-form > label, .request-form .form-row, .request-form .submit-btn { grid-column: 1; } }
 .error-message { color: #e34841; font-size: 0.68rem; margin-top: 4px; font-weight: 500; display: block; }
 
 /* Owner Actions in Profile Modal */

@@ -103,6 +103,21 @@ footer .brand-mark { width: 24px; height: 24px; font-size: 1.2rem; }
 .profile-details div { padding: 13px; background: #f8f1eb; }
 .profile-details span { display: block; margin-bottom: 5px; color: #9a8e85; font-size: .68rem; }
 .profile-details strong { color: #4d413b; font-size: .8rem; }
+.donation-summary { display: block; width: 100%; padding: 13px; border: 0; color: inherit; background: #f8f1eb; text-align: left; cursor: pointer; }
+.donation-summary:hover { background: #f5e9e1; }
+.donation-summary span { display: flex; justify-content: space-between; align-items: center; }
+.donation-summary small { color: #d34c44; font-size: .61rem; font-weight: 700; }
+.donation-summary strong { display: block; }
+.donation-history { margin: -7px 0 22px; padding: 15px; border: 1px solid #eadbd2; background: #fff8f4; }
+.history-heading { display: flex; justify-content: space-between; align-items: end; gap: 14px; padding-bottom: 11px; border-bottom: 1px solid #eedfd6; }
+.history-heading div { display: flex; align-items: baseline; gap: 7px; }
+.history-heading strong { color: #d94740; font-size: 1.45rem; }
+.history-heading div span, .history-heading > span { color: #8e8178; font-size: .67rem; }
+.donation-history ol { display: grid; gap: 8px; margin: 13px 0 0; padding: 0; list-style: none; }
+.donation-history li { display: flex; align-items: center; gap: 9px; color: #51453e; font-size: .76rem; }
+.donation-history li > span { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; color: #c9443d; background: #fbe7e3; font-size: .65rem; font-weight: 700; }
+.donation-history li em { margin-left: auto; color: #4e9b61; font-size: .63rem; font-style: normal; font-weight: 700; }
+.empty-history { margin: 13px 0 0; color: #8e8178; font-size: .75rem; }
 .profile-note { margin: 0 0 17px; color: #71655d; font-family: Georgia, serif; font-size: .96rem; }
 .call-btn { display: block; padding: 13px; color: white; background: #e34841; text-align: center; text-decoration: none; font-size: .83rem; font-weight: 700; }
 .review-form { margin-top: 24px; padding-top: 20px; border-top: 1px solid #eee5dd; }
