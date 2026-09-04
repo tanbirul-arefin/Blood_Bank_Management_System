@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 const bloodGroups = ['সব গ্রুপ', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 const districts = ['ঢাকা', 'চট্টগ্রাম', 'সিলেট', 'রাজশাহী', 'খুলনা', 'ময়মনসিংহ', 'রংপুর', 'বরিশাল', 'কুমিল্লা', 'জয়পুরহাট'];
@@ -7,6 +7,14 @@ const districtAliases = { dhaka: 'ঢাকা', chittagong: 'চট্টগ্
 const stockData = { 'A+': 8, 'A-': 3, 'B+': 6, 'B-': 2, 'AB+': 4, 'AB-': 1, 'O+': 10, 'O-': 2 };
 const getDonationHistory = (donor) => [...new Set([...(donor.donationHistory || []), donor.lastDonation].filter(Boolean))].sort((first, second) => second.localeCompare(first));
 const formatDonationDate = (date) => date ? new Intl.DateTimeFormat('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(`${date}T00:00:00`)) : 'এখনও রক্ত দেননি';
+const normalizePlace = (value) => String(value || '').toLowerCase().replace(/[.,-/]/g, ' ').replace(/\s+/g, ' ').trim();
+const requestMatchesDonor = (request, donor) => {
+  const requestArea = normalizePlace(`${request.address || ''} ${request.location || ''}`);
+  const donorAreas = [donor.area, donor.areaBn].map(normalizePlace).filter(Boolean);
+  const donorDistrict = normalizePlace(`${donor.district || ''} ${districtEnglish[donor.district] || ''}`);
+  const areaMatches = donorAreas.some((area) => requestArea.includes(area)) || requestArea.includes(donorDistrict);
+  return areaMatches && normalizePlace(request.blood) === normalizePlace(donor.blood);
+};
 const starterDonors = [
   { id: 1, name: 'Nadia Rahman', nameBn: 'নাদিয়া রহমান', blood: 'A+', district: 'সিলেট', area: 'Zindabazar', areaBn: 'জিন্দাবাজার', phone: '01712-345678', availability: 'সকাল ৮টা - দুপুর ১২টা', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80', note: 'জরুরি প্রয়োজনে পাশে আছি।', rating: 5, reviews: 18, verified: true, password: '1234', lastDonation: '2025-11-18', donationHistory: ['2025-11-18', '2025-07-10', '2025-03-02'] },
   { id: 2, name: 'Sajid Hossain', nameBn: 'সাজিদ হোসেন', blood: 'A+', district: 'ঢাকা', area: 'Dhanmondi', areaBn: 'ধানমন্ডি', phone: '01812-345678', availability: 'সন্ধ্যা ৬টা - রাত ৯টা', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80', note: 'রক্ত দিতে নিয়মিত প্রস্তুত আছি।', rating: 4.9, reviews: 12, verified: true, password: '1234', lastDonation: '2025-12-22', donationHistory: ['2025-12-22', '2025-08-15', '2025-04-05', '2024-12-20'] },
@@ -21,6 +29,8 @@ function App() {
     const savedDonors = localStorage.getItem('donors');
     return savedDonors ? JSON.parse(savedDonors) : starterDonors;
   });
+  const [requestAlerts, setRequestAlerts] = useState([]);
+  const seenRequestIds = useRef(new Set());
   const [currentUser, setCurrentUser] = useState(() => {
     const saved = localStorage.getItem('currentUser');
     return saved ? JSON.parse(saved) : null;
@@ -41,11 +51,33 @@ function App() {
   const [notice, setNotice] = useState('');
   
   const [registration, setRegistration] = useState({ name: '', blood: 'A+', district: 'ঢাকা', area: '', phone: '', age: '', lastDonation: '', availability: 'যেকোনো সময়', status: 'Available', image: '', note: '', password: '' });
-  const [request, setRequest] = useState({ name: '', patient: '', blood: 'A+', bags: 1, location: '', phone: '' });
+  const [request, setRequest] = useState({ name: '', patient: '', blood: 'A+', bags: 1, address: '', hospitalName: '', phone: '' });
 
   useEffect(() => {
     localStorage.setItem('donors', JSON.stringify(donors));
   }, [donors]);
+
+  useEffect(() => {
+    if (!currentUser) return undefined;
+    const checkRequests = async () => {
+      try {
+        const response = await fetch('/api/blood-requests');
+        if (!response.ok) return;
+        const requests = await response.json();
+        const storageKey = `seenRequests:${currentUser.id}`;
+        const savedSeenIds = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        seenRequestIds.current = new Set(savedSeenIds);
+        const newAlerts = requests.filter((item) => !seenRequestIds.current.has(item.id) && requestMatchesDonor(item, currentUser) && item.phone !== currentUser.phone);
+        requests.forEach((item) => seenRequestIds.current.add(item.id));
+        localStorage.setItem(storageKey, JSON.stringify([...seenRequestIds.current].slice(-100)));
+        if (newAlerts.length) setRequestAlerts((current) => [...newAlerts, ...current].slice(0, 5));
+      } catch {
+      }
+    };
+    checkRequests();
+    const timer = setInterval(checkRequests, 5000);
+    return () => clearInterval(timer);
+  }, [currentUser]);
 
   const filteredDonors = useMemo(() => donors.filter((donor) => {
     const districtText = `${donor.district} ${districtEnglish[donor.district] || ''}`.toLowerCase();
@@ -121,11 +153,21 @@ function App() {
     setRegistration({ name: '', blood: 'A+', district: 'ঢাকা', area: '', phone: '', age: '', lastDonation: '', availability: 'যেকোনো সময়', status: 'Available', image: '', note: '', password: '' });
   };
 
-  const handleRequest = (event) => {
+  const handleRequest = async (event) => {
     event.preventDefault();
-    setNotice('আপনার জরুরি রক্তের অনুরোধটি সফলভাবে পাঠানো হয়েছে।');
-    setActiveTab('find');
-    setRequest({ name: '', patient: '', blood: 'A+', bags: 1, location: '', phone: '' });
+    try {
+      const response = await fetch('/api/blood-requests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requesterName: request.name, patientName: request.patient, blood: request.blood, bags: request.bags, address: request.address, hospitalName: request.hospitalName, location: request.address, phone: request.phone })
+      });
+      if (!response.ok) throw new Error('Request failed');
+      setNotice('আপনার জরুরি রক্তের অনুরোধটি সফলভাবে পাঠানো হয়েছে।');
+      setActiveTab('find');
+      setRequest({ name: '', patient: '', blood: 'A+', bags: 1, address: '', hospitalName: '', phone: '' });
+    } catch {
+      setNotice('অনুরোধ পাঠানো যায়নি। Java server চালু আছে কি না দেখুন।');
+    }
   };
 
   const handleReview = (event) => {
@@ -257,6 +299,17 @@ function App() {
       {activeTab === 'find' ? <main id="top"><section className="hero"><div className="hero-content"><p className="overline">বাংলাদেশের trusted blood donor network</p><h1>আজ আপনার রক্তে<br /><em>বাঁচুক একটি জীবন।</em></h1><p className="hero-subtitle">আপনার কাছাকাছি verified donor খুঁজুন। রক্তের গ্রুপ, এলাকা এবং availability অনুযায়ী সহজেই যোগাযোগ করুন।</p><div className="hero-actions"><button className="primary-btn" onClick={() => document.getElementById('directory').scrollIntoView({ behavior: 'smooth' })}>ডোনার খুঁজুন <span>↓</span></button><button className="text-btn" onClick={() => setActiveTab('register')}>আমি donor হতে চাই <span>→</span></button></div></div><div className="hero-visual"><div className="blood-drop">+</div><div className="hero-stat"><strong>{donors.length + 1247}</strong><span>registered donors</span></div><div className="hero-note">“একটি ছোট্ট সাহায্য<br />কারও পুরো পৃথিবী।”</div></div></section><section className="trust-strip"><div><strong>২৪/৭</strong><span>জরুরি সাপোর্ট</span></div><div><strong>৬৪</strong><span>জেলায় donor</span></div><div><strong>১,২৫৩+</strong><span>সক্রিয় সদস্য</span></div><div><strong>১০০%</strong><span>মানবিক উদ্যোগ</span></div></section><section className="directory-section" id="directory"><div className="section-intro"><div><p className="overline">আপনার প্রয়োজনের মানুষটি</p><h2>Donor directory</h2></div><p>রক্তের গ্রুপ ও এলাকা বেছে নিয়ে<br />কাছাকাছি donor খুঁজে নিন।</p></div><div className="filter-bar"><div className="search-box"><span>⌕</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="নাম বা এলাকার নাম লিখুন..." /></div><div className="search-box district-search"><span>⌖</span><input value={districtQuery} onChange={(event) => setDistrictQuery(event.target.value)} placeholder="জেলা লিখে search করুন..." /></div><select value={blood} onChange={(event) => setBlood(event.target.value)}>{bloodGroups.map((group) => <option key={group}>{group}</option>)}</select><select value={district} onChange={(event) => setDistrict(event.target.value)}><option>সব এলাকা</option>{districts.map((item) => <option key={item}>{item}</option>)}</select></div><div className="result-line"><span><strong>{filteredDonors.length}</strong> জন donor পাওয়া গেছে</span><span className="available-key"><i /> এখন available</span></div><div className="donor-grid">{filteredDonors.map((donor) => <DonorCard key={donor.id} donor={donor} onOpen={() => setSelectedDonor(donor)} />)}</div>{filteredDonors.length === 0 && <div className="empty">এই filter-এ কোনো donor পাওয়া যায়নি। অন্য এলাকা বা blood group চেষ্টা করুন।</div>}</section><section className="impact-section" id="how-it-works"><div><p className="overline">একসাথে আমরা পারি</p><h2>রক্তের সম্পর্ক<br /><em>মানবতার সম্পর্ক।</em></h2></div><div className="impact-copy"><p>রক্তবন্ধু এমন একটি community যেখানে donor ও receiver সরাসরি একে অপরের কাছে পৌঁছাতে পারে। আপনার এক ব্যাগ রক্ত কারও পরিবারের জন্য নতুন আশার শুরু হতে পারে।</p><button className="text-btn" onClick={() => setActiveTab('register')}>community-তে যোগ দিন <span>→</span></button></div></section></main> : activeTab === 'register' ? <RegisterForm registration={registration} updateRegistration={updateRegistration} onImageChange={handleImageChange} onSubmit={handleRegistration} onBack={() => { if (currentUser) { setActiveTab('find'); } else { setActiveTab('login'); } }} /> : activeTab === 'stock' ? <StockPanel onRequest={() => setActiveTab('request')} /> : <RequestForm request={request} updateRequest={(field, value) => setRequest((current) => ({ ...current, [field]: value }))} onSubmit={handleRequest} onBack={() => setActiveTab('find')} />}
       <footer><span className="brand"><span className="brand-mark">+</span> রক্তবন্ধু</span><span>মানুষ মানুষের জন্য।</span><span>© ২০২৪ BloodBond Bangladesh</span></footer>
       {notice && <button className="notice" onClick={() => setNotice('')}>{notice} <span>×</span></button>}
+      {requestAlerts.length > 0 && (
+        <aside className="request-alerts" aria-label="রক্তের অনুরোধের notification">
+          {requestAlerts.map((item) => (
+            <div className="request-alert" key={item.id}>
+              <button type="button" onClick={() => setRequestAlerts((current) => current.filter((alert) => alert.id !== item.id))} aria-label="notification বন্ধ করুন">×</button>
+              <strong>আপনার এলাকার রক্তের অনুরোধ</strong>
+              <p>ঠিকানা: {item.address || item.location}<br />রক্তের গ্রুপ: {item.blood}<br />হাসপাতাল / জায়গা: {item.hospitalName || item.location}<br />মোবাইল নম্বর: {item.phone}</p>
+            </div>
+          ))}
+        </aside>
+      )}
       {selectedDonor && (
         <DonorModal
           donor={selectedDonor}
@@ -685,13 +738,16 @@ function RequestForm({ request, updateRequest, onSubmit, onBack }) {
           </label>
         </div>
         <div className="form-row">
-          <label>কোথায় প্রয়োজন?
-            <input required value={request.location} onChange={(event) => updateRequest('location', event.target.value)} placeholder="হাসপাতাল / এলাকা" />
+          <label>ঠিকানা / এলাকা
+            <input required value={request.address || ''} onChange={(event) => updateRequest('address', event.target.value)} placeholder="যেমন: ধানমন্ডি, ঢাকা" />
           </label>
-          <label>মোবাইল নম্বর
-            <input required value={request.phone} onChange={(event) => updateRequest('phone', event.target.value)} placeholder="01XXXXXXXXX" />
+          <label>হাসপাতাল / place
+            <input required value={request.hospitalName || ''} onChange={(event) => updateRequest('hospitalName', event.target.value)} placeholder="হাসপাতাল বা জায়গার নাম" />
           </label>
         </div>
+        <label>মোবাইল নম্বর
+          <input required value={request.phone} onChange={(event) => updateRequest('phone', event.target.value)} placeholder="01XXXXXXXXX" />
+        </label>
         <button className="primary-btn submit-btn" type="submit">Emergency request পাঠান <span>→</span></button>
       </form>
     </main>

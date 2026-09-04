@@ -30,6 +30,10 @@ public class BloodRequest {
     @NotBlank
     private String location;
 
+    private String address;
+
+    private String hospitalName;
+
     @NotBlank
     private String phone;
 
@@ -81,6 +85,22 @@ public class BloodRequest {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getHospitalName() {
+        return hospitalName;
+    }
+
+    public void setHospitalName(String hospitalName) {
+        this.hospitalName = hospitalName;
     }
 
     public String getPhone() {
