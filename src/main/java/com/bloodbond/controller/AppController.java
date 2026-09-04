@@ -84,15 +84,7 @@ public class AppController {
                        @RequestParam(defaultValue = "") String district,
                        HttpSession session,
                        Model model) {
-        if (session.getAttribute("loggedInUser") == null) {
-            return "redirect:/login";
-        }
-        addCommon(model, "find");
-        model.addAttribute("donors", donorService.filter(blood, district));
-        model.addAttribute("blood", blood);
-        model.addAttribute("districtQuery", district);
-        model.addAttribute("donorCount", donorService.findAll().size() + 1247);
-        return "index";
+        return "forward:/index.html";
     }
 
     @GetMapping("/register")
