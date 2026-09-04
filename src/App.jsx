@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 const bloodGroups = ['সব গ্রুপ', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
 const districts = ['ঢাকা', 'চট্টগ্রাম', 'সিলেট', 'রাজশাহী', 'খুলনা', 'ময়মনসিংহ', 'রংপুর', 'বরিশাল', 'কুমিল্লা', 'জয়পুরহাট'];
@@ -17,7 +17,10 @@ const starterDonors = [
 ];
 
 function App() {
-  const [donors, setDonors] = useState(starterDonors);
+  const [donors, setDonors] = useState(() => {
+    const savedDonors = localStorage.getItem('donors');
+    return savedDonors ? JSON.parse(savedDonors) : starterDonors;
+  });
   const [currentUser, setCurrentUser] = useState(() => {
     const saved = localStorage.getItem('currentUser');
     return saved ? JSON.parse(saved) : null;
@@ -39,6 +42,10 @@ function App() {
   
   const [registration, setRegistration] = useState({ name: '', blood: 'A+', district: 'ঢাকা', area: '', phone: '', age: '', lastDonation: '', availability: 'যেকোনো সময়', status: 'Available', image: '', note: '', password: '' });
   const [request, setRequest] = useState({ name: '', patient: '', blood: 'A+', bags: 1, location: '', phone: '' });
+
+  useEffect(() => {
+    localStorage.setItem('donors', JSON.stringify(donors));
+  }, [donors]);
 
   const filteredDonors = useMemo(() => donors.filter((donor) => {
     const districtText = `${donor.district} ${districtEnglish[donor.district] || ''}`.toLowerCase();
@@ -140,6 +147,23 @@ function App() {
     setNotice('আপনার প্রোফাইল তথ্য সফলভাবে আপডেট করা হয়েছে।');
   };
 
+  const handleAddDonation = (donorId, donationDate) => {
+    const donor = donors.find((item) => item.id === donorId);
+    if (!donor) return;
+    const donationHistory = getDonationHistory({ ...donor, donationHistory: [...(donor.donationHistory || []), donationDate] });
+    const updatedDonor = { ...donor, donationHistory, lastDonation: donationHistory[0] };
+    setDonors((current) => current.map((item) => item.id === donorId ? updatedDonor : item));
+    setSelectedDonor((current) => current && current.id === donorId ? updatedDonor : current);
+
+    if (currentUser && currentUser.id === donorId) {
+      const donationHistory = getDonationHistory({ ...currentUser, donationHistory: [...(currentUser.donationHistory || []), donationDate] });
+      const updatedUser = { ...currentUser, donationHistory, lastDonation: donationHistory[0] };
+      setCurrentUser(updatedUser);
+      localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+    }
+    setNotice('আপনার রক্তদানের history-তে নতুন entry যুক্ত হয়েছে।');
+  };
+
   const handleDelete = (id, reason) => {
     const donor = donors.find((d) => d.id === id);
     const name = donor ? (donor.nameBn || donor.name) : 'ডোনার';
@@ -238,6 +262,7 @@ function App() {
           donor={selectedDonor}
           onClose={() => setSelectedDonor(null)}
           onReview={handleReview}
+          onAddDonation={handleAddDonation}
           currentUser={currentUser}
           onEditClick={() => {
             setEditingDonor(selectedDonor);
@@ -287,10 +312,12 @@ function DonorCard({ donor, onOpen }) {
   );
 }
 
-function DonorModal({ donor, onClose, onReview, currentUser, onEditClick, onDeleteClick }) {
+function DonorModal({ donor, onClose, onReview, onAddDonation, currentUser, onEditClick, onDeleteClick }) {
   const eligible = (!donor.age || donor.age >= 18) && (!donor.lastDonation || (Date.now() - new Date(donor.lastDonation).getTime()) >= 90 * 24 * 60 * 60 * 1000);
   const donationHistory = getDonationHistory(donor);
   const [showDonationHistory, setShowDonationHistory] = useState(false);
+  const [donationDate, setDonationDate] = useState('');
+  const [historyError, setHistoryError] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteReason, setDeleteReason] = useState('কেন চলে যেতে চাচ্ছেন আমাদের ছেড়ে আমাদের কে একটু উপকার করলে কি এমন হতো');
 
@@ -300,6 +327,22 @@ function DonorModal({ donor, onClose, onReview, currentUser, onEditClick, onDele
     e.preventDefault();
     onDeleteClick(deleteReason);
     setShowDeleteConfirm(false);
+  };
+
+  const handleDonationSubmit = (event) => {
+    event.preventDefault();
+    if (!donationDate) return;
+    if (donationHistory.includes(donationDate)) {
+      setHistoryError('এই তারিখটি আগেই history-তে আছে।');
+      return;
+    }
+    if (donationDate > new Date().toISOString().slice(0, 10)) {
+      setHistoryError('ভবিষ্যতের তারিখ যোগ করা যাবে না।');
+      return;
+    }
+    onAddDonation(donor.id, donationDate);
+    setDonationDate('');
+    setHistoryError('');
   };
 
   return (
@@ -345,6 +388,15 @@ function DonorModal({ donor, onClose, onReview, currentUser, onEditClick, onDele
             {donationHistory.length ? (
               <ol>{donationHistory.map((date, index) => <li key={date}><span>{index + 1}</span><strong>{formatDonationDate(date)}</strong>{index === 0 && <em>সর্বশেষ</em>}</li>)}</ol>
             ) : <p className="empty-history">এই donor এখনও রক্ত দান করেননি।</p>}
+            {isOwner && (
+              <form className="add-donation-form" onSubmit={handleDonationSubmit}>
+                <label>আপনি কবে রক্ত দিয়েছেন?
+                  <input type="date" value={donationDate} max={new Date().toISOString().slice(0, 10)} onChange={(event) => { setDonationDate(event.target.value); setHistoryError(''); }} required />
+                </label>
+                <button className="primary-btn" type="submit">+ History-তে যোগ করুন</button>
+                {historyError && <p className="history-error">{historyError}</p>}
+              </form>
+            )}
           </section>
         )}
         <p className="profile-note">“{donor.note}”</p>

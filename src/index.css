@@ -92,8 +92,8 @@ footer .brand { color: #3c3531; font-size: .88rem; }
 footer .brand-mark { width: 24px; height: 24px; font-size: 1.2rem; }
 .notice { position: fixed; z-index: 10; right: 22px; bottom: 22px; padding: 15px 18px; border: 0; color: white; background: #2d2927; box-shadow: 0 10px 26px #0003; font-size: .82rem; }
 .notice span { margin-left: 18px; color: #e97870; }
-.modal-backdrop { position: fixed; z-index: 20; inset: 0; display: grid; place-items: center; padding: 20px; background: #30272499; }
-.modal { position: relative; width: min(540px, 100%); padding: 31px; background: #fffdfa; box-shadow: 0 25px 70px #20100c44; }
+.modal-backdrop { position: fixed; z-index: 20; inset: 0; display: grid; place-items: center; padding: 20px; overflow-y: auto; background: #30272499; }
+.modal { position: relative; width: min(540px, 100%); max-height: calc(100vh - 40px); overflow-y: auto; padding: 31px; background: #fffdfa; box-shadow: 0 25px 70px #20100c44; }
 .close-btn { position: absolute; top: 14px; right: 16px; border: 0; background: transparent; color: #8f837b; font-size: 1.6rem; }
 .modal-profile { display: flex; align-items: center; gap: 18px; padding-bottom: 24px; border-bottom: 1px solid #eee5dd; }
 .modal-profile img { width: 86px; height: 86px; border-radius: 50%; object-fit: cover; }
@@ -118,6 +118,11 @@ footer .brand-mark { width: 24px; height: 24px; font-size: 1.2rem; }
 .donation-history li > span { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; color: #c9443d; background: #fbe7e3; font-size: .65rem; font-weight: 700; }
 .donation-history li em { margin-left: auto; color: #4e9b61; font-size: .63rem; font-style: normal; font-weight: 700; }
 .empty-history { margin: 13px 0 0; color: #8e8178; font-size: .75rem; }
+.add-donation-form { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; margin-top: 16px; padding-top: 14px; border-top: 1px dashed #eadbd2; }
+.add-donation-form label { display: grid; gap: 6px; color: #766a62; font-size: .68rem; font-weight: 700; }
+.add-donation-form input { width: 100%; padding: 10px; border: 1px solid #e5dcd5; color: #3b3531; background: white; font-size: .78rem; }
+.add-donation-form .primary-btn { padding: 10px 12px; white-space: nowrap; font-size: .72rem; }
+.history-error { grid-column: 1 / -1; margin: 0; color: #b91c1c; font-size: .68rem; }
 .profile-note { margin: 0 0 17px; color: #71655d; font-family: Georgia, serif; font-size: .96rem; }
 .call-btn { display: block; padding: 13px; color: white; background: #e34841; text-align: center; text-decoration: none; font-size: .83rem; font-weight: 700; }
 .review-form { margin-top: 24px; padding-top: 20px; border-top: 1px solid #eee5dd; }
@@ -211,5 +216,12 @@ footer .brand-mark { width: 24px; height: 24px; font-size: 1.2rem; }
 @keyframes modalFadeIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 560px) {
+  .modal-backdrop { place-items: start center; padding: 12px; }
+  .modal { max-height: calc(100vh - 24px); padding: 22px; }
+  .add-donation-form { grid-template-columns: 1fr; }
+  .add-donation-form .primary-btn { width: 100%; }
 }
 
