@@ -63,7 +63,11 @@ h1 em, h2 em { color: #dc4c45; font-style: normal; }
 .result-line strong { color: #322b28; }
 .available-key { color: #6f6862; }
 .available-key i { display: inline-block; width: 6px; height: 6px; margin-right: 7px; border-radius: 50%; background: #56a76a; }
-.donor-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+.donor-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 15px; }
+.see-more-wrap { display: flex; justify-content: center; margin-top: 28px; }
+.see-more-btn { padding: 12px 24px; border: 1px solid #c83d38; color: #c83d38; background: #fffdfa; cursor: pointer; font-weight: 700; }
+.see-more-btn:hover { color: white; background: #c83d38; }
+@media (max-width: 1050px) { .donor-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .donor-card { display: flex; flex-direction: column; min-height: 337px; border: 1px solid #e8e0d8; background: #fffdfa; transition: transform .2s ease, box-shadow .2s ease; }
 .donor-card:hover { transform: translateY(-4px); box-shadow: 0 14px 28px #4d322015; }
 .card-image-wrap { position: relative; height: 155px; overflow: hidden; background: #eaded4; }
